@@ -13,12 +13,14 @@ source repository instead.
 ## How files arrive
 
 `.github/workflows/sync-docs.yml` in each source repository runs on a push to `main` that changes
-`docs/site.md`, on every `v*` tag, and by hand (`workflow_dispatch`). It copies `docs/site.md` to
+anything under `docs/` (or the workflow itself), on every `v*` tag and published release, and by
+hand (`workflow_dispatch`). It copies `docs/site.md` to
 `content/projects/<repo name>.md` on this repository's default branch and commits as
 `github-actions[bot]` only when the file changed. It authenticates with a write-enabled deploy key
 (`docs-sync`) on this repository; each source repository holds the private half as the
 `SITE_DEPLOY_KEY` secret. On a tag push the `version:` field is set from the tag (`v1.2.3` →
-`1.2.3`).
+`1.2.3`). The same run mirrors the rest of `docs/**/*.md` into `content/docs/<repo name>/`
+(see `content/docs/README.md`).
 
 ## Front matter
 

@@ -12,6 +12,7 @@ import CoxScenes from "../components/CoxScenes.astro";
 import KetchRoute from "../components/KetchRoute.astro";
 import { u, LICENSE, CAVEATS, THEMES, FREE_HIGHLIGHTS, type ThemeKey } from "../lib/site";
 import { proFor } from "../lib/catalog";
+import { getProductDocs, productsWithDocs, docsHref } from "../lib/docs";
 import { DEMOS, FLOWS, COX_SCENES, demoFromUsage } from "../data/showcase";
 import { splitSections, parseFeatures, parseUsage, parseLinks, renderMd, codeBlock } from "../lib/sections";
 
@@ -34,6 +35,10 @@ const caveat = CAVEATS[slug];
 const demo = DEMOS[slug] ?? demoFromUsage(d.title, usage.map((g) => ({ code: g.code })));
 const flow = FLOWS[slug];
 const pro = proFor(entry);
+const docs = productsWithDocs().includes(slug) ? getProductDocs(slug) : null;
+/* ketch leads with its Getting started page; the others with the docs overview. */
+const gs = docs?.pages.find((p) => p.slug === "getting-started" && !p.file);
+const docsCta = docs ? (gs ? { href: docsHref(slug, gs.slug), label: "Get started" } : { href: docsHref(slug), label: "Read the docs" }) : null;
 
 const iconSets: Record<string, string[]> = {
   rtok: ["plug", "terminal", "undo", "graph", "layers", "chart", "box", "eye"],
@@ -51,7 +56,7 @@ const heroAlt: Record<string, string> = {
 <Base title={`${d.title} — ${d.tagline}`} description={d.tagline} theme={slug} accent={d.accent} accent2={d.accent2} accentLight={d.accentLight}>
   <section class="hero container" aria-labelledby="p-title">
     <div class="hero__copy">
-      <nav class="breadcrumb" aria-label="Breadcrumb"><a href={u("/#open-source")}>Open source</a><span aria-hidden="true">/</span><span aria-current="page">{d.title}</span></nav>
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href={u("/#catalog")}>Open source</a><span aria-hidden="true">/</span><span aria-current="page">{d.title}</span></nav>
       <div class="p-meta">
         <span class="badge badge--version">v{d.version}</span>
         <span class="badge badge--line">{LICENSE.short}</span>
@@ -61,7 +66,8 @@ const heroAlt: Record<string, string> = {
       <div class="install-hero" set:html={codeBlock(d.install, "bash", `Install ${d.title}`)} />
       <div class="hero__ctas">
         <a class="btn btn--primary btn--lg" href={d.repo}><Icon name="github" size={18} /> View on GitHub</a>
-        {d.homepage && <a class="btn btn--glass btn--lg" href={d.homepage}>Documentation</a>}
+        {docsCta && <a class="btn btn--glass btn--lg" href={docsCta.href}>{docsCta.label} <Icon name="arrow" size={18} /></a>}
+        {!docsCta && d.homepage && <a class="btn btn--glass btn--lg" href={d.homepage}>Documentation</a>}
       </div>
       {caveat && <p class="note"><Icon name="info" size={16} /><span>{caveat}</span></p>}
     </div>
@@ -213,6 +219,7 @@ const heroAlt: Record<string, string> = {
       <h2 id="links-title" class="h2">Go deeper.</h2>
     </header>
     <ul class="links" role="list">
+      {docs && <li><a class="glass shine" href={docsHref(slug)}>{d.title} docs on this site · {docs.pages.length} pages<span aria-hidden="true">→</span></a></li>}
       {links.map((l) => (<li><a class="glass shine" href={l.href} rel="noopener">{l.label}<span aria-hidden="true">↗</span></a></li>))}
     </ul>
     <div class="license card glass">
@@ -253,6 +260,7 @@ const heroAlt: Record<string, string> = {
         <p class="muted">Free and open source. Star it, file an issue, or send a pull request.</p>
       </div>
       <div class="cta__actions">
+        {docsCta && <a class="btn btn--glass btn--lg" href={docsCta.href}>{docsCta.label} <Icon name="arrow" size={18} /></a>}
         <a class="btn btn--primary btn--lg" href={d.repo}><Icon name="github" size={18} /> github.com/listepo/{d.title}</a>
       </div>
     </div>

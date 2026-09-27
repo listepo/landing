@@ -1,0 +1,80 @@
+---
+// ketch getting started: a vertical three-step rail. ketch is a CLI with no account, so the
+// flow is install → first command → example output. Commands and the output transcript come
+// from the ketch README (Install section and the "Install & verify" demo).
+import type { Tool } from "../../lib/catalog";
+import type { DocPage } from "../../lib/docs";
+import { docsHref, docCodeBlock } from "../../lib/docs";
+import { renderInline } from "../../lib/sections";
+
+interface Props { tool: Tool; page: DocPage }
+const { tool } = Astro.props;
+const d = tool.data;
+const alternatives = d.install_alternatives ?? [];
+const steps = [
+  {
+    title: "Install ketch",
+    text: "One script on macOS and Linux. It runs `ketch self install` and `ketch path install`, so ketch ends up in `~/.ketch` as one of its own packages. Then make sure `~/.ketch/bin` is on your `PATH` — `ketch doctor` tells you if it is not.",
+    code: d.install,
+  },
+  {
+    title: "Install your first tool",
+    text: "Point ketch at any repository that publishes releases. It picks the asset built for your machine, checks the SHA-256 the release published, and links the binary onto your `PATH`.",
+    code: "ketch install listepo/rtok",
+  },
+];
+---
+<article class="gs" aria-labelledby="gs-title">
+  <header class="gs__head">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href={docsHref(tool.id)}>{d.title} docs</a><span aria-hidden="true">/</span><span>Start</span></nav>
+    <h1 id="gs-title" class="dhero__title">Getting started with {d.title}</h1>
+    <p class="lead">Three steps from nothing to a verified tool on your <code class="inline-code">PATH</code>. ketch is a command-line tool: there is no account to create and nothing to sign up for.</p>
+  </header>
+
+  <ol class="gs__rail">
+    {steps.map((s, i) => (
+      <li class="gs__step" style={`--i:${i}`}>
+        <span class="gs__n" aria-hidden="true">{i + 1}</span>
+        <div class="gs__body glass">
+          <h2 class="h3 gs__title"><span class="sr-only">Step {i + 1}: </span>{s.title}</h2>
+          <p set:html={renderInline(s.text)} />
+          <Fragment set:html={docCodeBlock(s.code, "bash")} />
+          {i === 0 && alternatives.length > 0 && (
+            <details class="gs__alt">
+              <summary>Windows, Homebrew or mise</summary>
+              {alternatives.map((c) => <Fragment set:html={docCodeBlock(c, c.startsWith("irm ") ? "powershell" : "bash")} />)}
+            </details>
+          )}
+        </div>
+      </li>
+    ))}
+    <li class="gs__step" style="--i:2">
+      <span class="gs__n" aria-hidden="true">3</span>
+      <div class="gs__body glass">
+        <h2 class="h3 gs__title"><span class="sr-only">Step 3: </span>See what it did</h2>
+        <p>ketch reports each stage: resolving the package, downloading the asset for your platform, verifying the checksum, and the installed version. The tool is on your <code class="inline-code">PATH</code> straight away.</p>
+        <figure class="term glass glass--thick gs__term">
+          <div class="term__bar"><span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="term__title">ketch — install &amp; verify</span></div>
+          <pre class="term__body gs__out" tabindex="0" aria-label="Example output"><span class="gs__p">$</span> ketch install listepo/rtok
+<span class="gs__dim">resolving</span>   rtok (github:listepo/rtok)
+<span class="gs__dim">downloading</span> rtok-aarch64-apple-darwin.tar.xz
+<span class="gs__warn">verified</span>    sha256 published by the release
+<span class="gs__ok">installed</span>   rtok 0.1.0
+
+<span class="gs__p">$</span> rtok --version
+rtok 0.1.0</pre>
+          <figcaption class="term__cap">Example output from the ketch README demo (Apple silicon, rtok 0.1.0). Asset name and version depend on your machine and the latest release.</figcaption>
+        </figure>
+      </div>
+    </li>
+  </ol>
+
+  <section class="gs__next" aria-labelledby="gs-next">
+    <h2 id="gs-next" class="h3">Where to go next</h2>
+    <ul class="gs__links" role="list">
+      <li><a class="glass shine" href={docsHref(tool.id, "commands")}><strong>Commands</strong><small>Every command, its form and one working example.</small></a></li>
+      <li><a class="glass shine" href={docsHref(tool.id, "lockfile")}><strong>Lockfile</strong><small>Pin a machine's tools and reproduce them elsewhere.</small></a></li>
+      <li><a class="glass shine" href={docsHref(tool.id, "troubleshooting")}><strong>Troubleshooting</strong><small>Failures ketch already explains, in one place.</small></a></li>
+    </ul>
+  </section>
+</article>
