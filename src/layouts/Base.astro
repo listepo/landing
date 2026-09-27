@@ -3,10 +3,12 @@ import "@fontsource-variable/inter";
 // Preload the Latin subset so text does not reflow when Inter replaces the fallback (CLS).
 import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "../styles/global.css";
+import "../styles/tailwind.css";
 import Icon from "../components/Icon.astro";
 import { u, BRAND, THEMES, type ThemeKey } from "../lib/site";
 import { getTools, proFor } from "../lib/catalog";
 import { productsWithDocs } from "../lib/docs";
+import { graph } from "../lib/seo";
 
 interface Props {
   title: string;
@@ -15,12 +17,18 @@ interface Props {
   accent?: string;
   accent2?: string;
   accentLight?: string;
+  /** Open Graph type: "website" (default) or "article" for docs pages. */
+  ogType?: "website" | "article";
+  /** Alt text for the share card, when the card's text is known. */
+  imageAlt?: string;
+  /** schema.org nodes for this page, emitted as one JSON-LD graph. */
+  jsonLd?: object[];
 }
-const { title, description, theme, ...over } = Astro.props;
+const { title, description, theme, ogType = "website", imageAlt, jsonLd = [], ...over } = Astro.props;
 const t = { ...THEMES[theme], ...Object.fromEntries(Object.entries(over).filter(([, v]) => v)) };
 const vars = `--accent:${t.accent};--accent-2:${t.accent2};--accent-light:${t.accentLight};--bg:${t.bg}`;
 const og = new URL(u(`/images/${t.images}/og.jpg`), Astro.site).href;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const canonical = new URL(Astro.url.pathname.replace(/\/?$/, "/"), Astro.site).href;
 const tools = await getTools();
 const current = tools.find((x) => x.id === theme);
 const withDocs = new Set(productsWithDocs());
@@ -36,17 +44,28 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content={t.bg} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={u("/favicon.svg")} type="image/svg+xml" />
+    <link rel="sitemap" type="application/xml" href={u("/sitemap-index.xml")} />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={BRAND} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:image" content={og} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:url" content={canonical} />
+    {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={og} />
+    {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
+    {jsonLd.length > 0 && <script is:inline type="application/ld+json" set:html={JSON.stringify(graph(jsonLd)).replace(/</g, "\\u003c")} />}
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -60,17 +79,17 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
       <span class="mesh__grain"></span>
     </div>
 
-    <header class="nav">
-      <div class="nav__inner">
-        <a class="brand" href={u("/")} aria-label={`${BRAND} home`}>
+    <header class="nav tw:max-[459px]:px-2!">
+      <div class="nav__inner tw:max-[459px]:gap-2! tw:max-[459px]:pl-3! tw:max-[359px]:gap-1!">
+        <a class="brand tw:max-[459px]:pr-0!" href={u("/")} aria-label={`${BRAND} home`}>
           <span class="brand__mark" aria-hidden="true"></span>
-          <span>listepo <span class="brand__sub">tools</span></span>
+          <span>listepo <span class="brand__sub tw:max-[459px]:hidden!">tools</span></span>
         </a>
         <nav aria-label="Primary">
           <ul class="nav__links">
             <li class="menu">
               <details class="menu__details" data-menu>
-                <summary class="menu__trigger" aria-current={current ? "page" : undefined}>
+                <summary class="menu__trigger tw:max-[459px]:px-2! tw:max-[359px]:px-1!" aria-current={current ? "page" : undefined}>
                   Products{current && <span class="menu__current">· {current.data.title}</span>}
                   <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </summary>
@@ -108,12 +127,12 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
         </nav>
         <div class="nav__actions">
           <a class="btn btn--glass nav__gh" href="https://github.com/listepo"><Icon name="github" size={16} /> GitHub</a>
-          <a class="btn btn--primary" href={u("/#catalog")}>Browse tools</a>
+          <a class="btn btn--primary tw:max-[459px]:px-4! tw:max-[359px]:px-3!" href={u("/#catalog")}>Browse tools</a>
         </div>
       </div>
     </header>
 
-    <main id="main" tabindex="-1">
+    <main id="main" tabindex="-1" class="tw:overflow-x-clip">
       <slot />
     </main>
 

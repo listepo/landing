@@ -10,11 +10,12 @@ import CodeGraph from "../components/CodeGraph.astro";
 import TokenParticles from "../components/TokenParticles.astro";
 import CoxScenes from "../components/CoxScenes.astro";
 import KetchRoute from "../components/KetchRoute.astro";
-import { u, LICENSE, CAVEATS, THEMES, FREE_HIGHLIGHTS, type ThemeKey } from "../lib/site";
+import { u, BRAND, LICENSE, CAVEATS, THEMES, FREE_HIGHLIGHTS, type ThemeKey } from "../lib/site";
 import { proFor } from "../lib/catalog";
 import { getProductDocs, productsWithDocs, docsHref } from "../lib/docs";
 import { DEMOS, FLOWS, COX_SCENES, demoFromUsage } from "../data/showcase";
 import { splitSections, parseFeatures, parseUsage, parseLinks, renderMd, codeBlock } from "../lib/sections";
+import { abs, productTitle, productDescription, softwareApplication, sourceCode, breadcrumbs } from "../lib/seo";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -51,9 +52,16 @@ const heroAlt: Record<string, string> = {
   cox: "Abstract interlocking glass rings glowing lime green on a dark background.",
   ketch: "Abstract floating glass app window listing verified packages, with glass spheres around it.",
 };
+const pageTitle = productTitle(entry);
+const pageDescription = productDescription(entry, s["overview"]);
+const jsonLd = [
+  softwareApplication(entry, { description: pageDescription, installMd: s["install"], features: features.map((f) => f.name) }),
+  sourceCode(entry),
+  breadcrumbs([{ name: BRAND, url: abs("/") }, { name: d.title, url: abs(`/${slug}/`) }]),
+];
 /* rtok bitset legend: 16 blocks in the art — 9 kept, 4 thinned, 3 cut (illustrative, not a measurement). */
 ---
-<Base title={`${d.title} — ${d.tagline}`} description={d.tagline} theme={slug} accent={d.accent} accent2={d.accent2} accentLight={d.accentLight}>
+<Base title={pageTitle} description={pageDescription} theme={slug} accent={d.accent} accent2={d.accent2} accentLight={d.accentLight} imageAlt={`${d.title} — ${d.tagline}`} jsonLd={jsonLd}>
   <section class="hero container" aria-labelledby="p-title">
     <div class="hero__copy">
       <nav class="breadcrumb" aria-label="Breadcrumb"><a href={u("/#catalog")}>Open source</a><span aria-hidden="true">/</span><span aria-current="page">{d.title}</span></nav>
@@ -253,7 +261,7 @@ const heroAlt: Record<string, string> = {
   </section>
 
   <section class="container" aria-labelledby="cta-title">
-    <div class="cta cta--prop glass glass--thick">
+    <div class="cta cta--prop glass glass--thick tw:max-[959px]:grid-cols-[minmax(0,1fr)]">
       <Picture class="cta__prop" dir={theme.images} name="prop" widths={[400, 800]} sizes="360px" w={800} h={800} />
       <div class="cta__copy">
         <h2 id="cta-title" class="h2">Try {d.title} today.</h2>
@@ -261,7 +269,7 @@ const heroAlt: Record<string, string> = {
       </div>
       <div class="cta__actions">
         {docsCta && <a class="btn btn--glass btn--lg" href={docsCta.href}>{docsCta.label} <Icon name="arrow" size={18} /></a>}
-        <a class="btn btn--primary btn--lg" href={d.repo}><Icon name="github" size={18} /> github.com/listepo/{d.title}</a>
+        <a class="btn btn--primary btn--lg tw:max-w-full tw:max-sm:whitespace-normal! tw:max-sm:py-2 tw:max-sm:text-center" href={d.repo}><Icon name="github" size={18} /> <span class="tw:min-w-0">github.com/<wbr />listepo/<wbr />{d.title}</span></a>
       </div>
     </div>
   </section>

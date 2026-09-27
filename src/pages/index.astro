@@ -9,6 +9,7 @@ import { getTools, featuredTool, proFor, cardInstall } from "../lib/catalog";
 import { parseFeatures, splitSections } from "../lib/sections";
 import { DEMOS, demoFromUsage } from "../data/showcase";
 import { parseUsage } from "../lib/sections";
+import { organization, website, abs, appId } from "../lib/seo";
 
 const tools = await getTools();
 const featured = featuredTool(tools);
@@ -17,6 +18,18 @@ const firstSentence = (html: string) => { const m = html.match(/^(.*?[.!?])(\s|$
 const fFeatures = parseFeatures(fSections["features"]).slice(0, 3).map((f) => ({ ...f, html: firstSentence(f.html) }));
 const fDemo = DEMOS[featured.id] ?? demoFromUsage(featured.data.title, parseUsage(fSections["usage examples"] ?? fSections["usage"]).map((g) => ({ code: g.code })));
 const minPro = tools.map((t) => proFor(t).price).sort((a, b) => parseFloat(a.replace(/[^\d.]/g, "")) - parseFloat(b.replace(/[^\d.]/g, "")))[0];
+const homeTitle = `${BRAND} — a marketplace of AI developer tools`;
+const homeDescription = "A curated catalog of AI developer tools. Every tool has a free open-source edition; add Pro per tool.";
+const jsonLd = [
+  organization(),
+  website(homeDescription),
+  {
+    "@type": "ItemList",
+    name: "Catalog",
+    url: abs("/#catalog"),
+    itemListElement: tools.map((p, i) => ({ "@type": "ListItem", position: i + 1, name: p.data.title, url: abs(`/${p.id}/`), item: { "@id": appId(p.id) } })),
+  },
+];
 const glyph: Record<string, string> = { rtok: "Δ", cox: "◎", ketch: "↓" };
 
 /* Hero hotspots — real features, taken from each project's synced site copy. Positions are % of the art layer. */
@@ -26,7 +39,7 @@ const hotspots = [
   { x: 35, y: 64, tool: "ketch", label: "ketch · verified installs", accent: THEMES.ketch.accent, href: "/ketch/", text: "Installs from any repo that ships releases and checks the published SHA-256 sums against what landed on disk." },
 ];
 ---
-<Base title={`${BRAND} — a marketplace of AI developer tools`} description="A curated catalog of AI developer tools. Every tool has a free open-source edition; add Pro per tool." theme="home">
+<Base title={homeTitle} description={homeDescription} theme="home" jsonLd={jsonLd}>
   <!-- HERO -->
   <section class="hero container" aria-labelledby="hero-title" data-audience="oss">
     <div class="hero__copy">
