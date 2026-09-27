@@ -1,0 +1,54 @@
+---
+// Docs page shell: the site layout, the sticky docs nav, a centred ~70ch column, an optional
+// on-page TOC on wide screens (≥1280px) and prev/next links.
+import Base from "./Base.astro";
+import DocsNav from "../components/DocsNav.astro";
+import "../styles/docs.css";
+import type { Tool } from "../lib/catalog";
+import { accentsFor } from "../lib/catalog";
+import { getProductDocs, docsHref, type TocEntry } from "../lib/docs";
+import type { ThemeKey } from "../lib/site";
+
+interface Props {
+  tool: Tool;
+  /** Current page slug; null for the docs overview. */
+  current: string | null;
+  title: string;
+  description: string;
+  toc?: TocEntry[];
+  /** Wide pages (overview, getting started) drop the prose column and TOC. */
+  wide?: boolean;
+}
+const { tool, current, title, description, toc = [], wide = false } = Astro.props;
+const docs = getProductDocs(tool.id);
+const a = accentsFor(tool);
+const order = [{ slug: null as string | null, navTitle: "Overview" }, ...docs.pages.map((p) => ({ slug: p.slug as string | null, navTitle: p.navTitle }))];
+const idx = order.findIndex((o) => o.slug === current);
+const prev = idx > 0 ? order[idx - 1] : null;
+const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
+const showToc = !wide && toc.filter((t) => t.depth === 2).length >= 3;
+---
+<Base title={title} description={description} theme={tool.id as ThemeKey} accent={a.accent} accent2={a.accent2} accentLight={a.accentLight}>
+  <DocsNav docs={docs} title={tool.data.title} current={current} />
+  <div class:list={["docs container", { "docs--wide": wide, "docs--toc": showToc }]}>
+    <div class="docs__main">
+      <slot />
+      <nav class="pager" aria-label="Previous and next page">
+        {prev ? (
+          <a class="pager__link glass shine" href={docsHref(tool.id, prev.slug ?? undefined)} rel="prev"><small>← Previous</small><strong>{prev.navTitle}</strong></a>
+        ) : <span />}
+        {next && (
+          <a class="pager__link pager__link--next glass shine" href={docsHref(tool.id, next.slug ?? undefined)} rel="next"><small>Next →</small><strong>{next.navTitle}</strong></a>
+        )}
+      </nav>
+    </div>
+    {showToc && (
+      <aside class="toc" aria-labelledby="toc-title">
+        <p id="toc-title" class="toc__title">On this page</p>
+        <ul role="list">
+          {toc.filter((t) => t.depth === 2).map((t) => <li><a href={`#${t.id}`} data-toc-link>{t.text}</a></li>)}
+        </ul>
+      </aside>
+    )}
+  </div>
+</Base>

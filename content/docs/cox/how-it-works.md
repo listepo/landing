@@ -1,0 +1,314 @@
+# How cox works, with examples
+
+One idea explains cox: a `Submission` goes into a pure core state machine,
+a sequence of `Event`s comes out, and every surface renders that same
+sequence. The TUI, headless `cox run -p`, the ACP editor server, the MCP
+server, the JSONL rollout on disk, and the test suite are all consumers of
+one event stream (`cox-protocol::types::{Submission, Event}`).
+
+```text
+                ┌────────────────────────────────────────┐
+  you ──Submission──▶│ cox-core: Session state machine    │──▶ Event stream ──▶ TUI
+script ──UserTurn───▶│  assemble → route → stream → tools │──▶ stream-json      ACP
+editor ──Approve────▶│  (no network / fs / process here)  │──▶ rollout.jsonl    tests
+                └────────────────────────────────────────┘
+```
+
+Everything the core needs from the outside world (models, files, shells,
+stored sessions) arrives through traits in `cox-protocol`
+(`Provider`, `Tool`, `Store`, `Hook`, `Archive`). That is what makes the
+loop testable without a model: a scripted provider plus a golden event log.
+
+For the full contract see `plan.md` §1.2–§1.3; for per-component rationale
+see `docs/design/`. This file is the walkthrough.
+
+## Example 1: one turn in the TUI
+
+```bash
+./target/debug/cox
+# > create hello.txt containing hi
+```
+
+What happens inside `cox-core` (`plan.md` §1.3), simplified:
+
+1. `Submission::UserTurn { text: "create hello.txt containing hi", .. }`
+   enters the session. `UserPromptSubmit` hooks may rewrite or block it.
+2. The core assembles a provider-neutral `Request` (system prompt, tool
+   schemas, instruction files, history), picks the `code` tier
+   (`claude-sonnet-5`), and streams the model.
+3. The model emits a `write` tool use. The core emits, in order:
+
+```json
+{"type":"tool_call_requested","call":{"name":"write","input":{"path":"hello.txt","content":"hi\n"}}}
+{"type":"tool_call_done","call_id":"…","result":{"ok":true,"visible":"wrote 3 bytes to hello.txt","bytes":3}}
+{"type":"text_delta","text":"Created hello.txt."}
+{"type":"turn_done","stop":"end_turn"}
+```
+
+4. All tool results for that assistant message go back to the model in
+   **one** user message, in emission order — even when the calls ran in
+   parallel. No `Event` is ever emitted after `TurnDone` for that turn.
+
+Interrupt (`Esc`) cancels the provider stream and every running tool
+through one shared token, then emits the partial assistant text and
+`TurnDone{Interrupted}`.
+
+## Example 2: the same turn, headless
+
+```bash
+export ANTHROPIC_API_KEY=sk-...
+./target/debug/cox run -p "create hello.txt containing hi"
+./target/debug/cox run -p "summarise the diff" --output-format stream-json | head -n 5
+```
+
+`stream-json` prints the *same* `Event` JSON the TUI renders, one object
+per line (Claude Code-compatible framing). Exit codes are scriptable:
+`0` ok · `1` error · `2` denied · `3` budget · `4` interrupted.
+
+Approval from a script: a `Write`/`Exec` call the policy would ask about
+is denied instead under the headless default (`--approve never`), with
+the reason in the tool result so the model can try another approach:
+
+```bash
+./target/debug/cox run -p "commit this" --approve never; echo "exit=$?"
+# exit=2 when a call was denied
+```
+
+Answer an interactive approval in the TUI with `y` (allow once),
+`s` (allow for this session), `n` (deny), `e` (edit the call's input).
+Programmatically that is `Submission::Approve { call_id, decision }`:
+
+```rust
+use cox_protocol::types::{Decision, Submission};
+// `call_id` is the pending call from the `ApprovalRequired` event.
+// Allow the pending call the engine escalated:
+let answer = Submission::Approve { call_id, decision: Decision::Allow };
+// …or let this tool+subject-prefix through for the rest of the session:
+let answer = Submission::Approve { call_id, decision: Decision::AllowForSession };
+```
+
+## Example 3: permissions — deny beats allow
+
+Every tool call carries a `risk` (`ReadOnly` | `Write` | `Exec` |
+`Destructive`) and a `subject` (the confined path, command line, URL, or
+`mcp__<server>__<tool>` name). `cox_core::permission::Engine` decides
+each call, in order: `deny` rules → `bypass`/`plan` modes → `allow`
+rules → `ask` rules → session grants → risk default → approval policy
+(`plan.md` §1.8). Adding a `deny` rule can never turn a `Deny` into
+anything else.
+
+```toml
+# ~/.cox/config.toml
+[permissions]
+allow = ["Bash(cargo test:*)"]   # this command runs without asking
+ask   = ["Bash(git commit:*)"]   # this one always asks
+deny  = ["Read(~/.ssh/**)"]      # this one never runs — even with an allow rule
+```
+
+```rust
+use std::path::Path;
+use cox_core::permission::{Engine, Outcome};
+use cox_protocol::{CallId, config::PermissionsConfig, types::*};
+use serde_json::json;
+
+let home = Path::new("/home/alice");
+let engine = Engine::compile(&PermissionsConfig::default(), Some(home), Path::new("/repo"))
+    .expect("default rules compile");
+let ssh = ToolCall {
+    id: CallId::new(), name: "read".into(),
+    input: json!({"path": "/home/alice/.ssh/id_ed25519"}),
+    risk: Risk::ReadOnly, subject: "/home/alice/.ssh/id_ed25519".into(),
+};
+// The default config denies this, despite the ReadOnly risk:
+assert!(matches!(
+    engine.decide(&ssh, PermissionMode::Default, ApprovalPolicy::OnRequest, SandboxMode::WorkspaceWrite, &[]),
+    Outcome::Deny { .. }
+));
+```
+
+(The same snippet runs as a doctest on `Engine::decide`, so `cargo test`
+keeps it compiling. A matching doctest on
+`cox_protocol::types::Submission` covers the `UserTurn` JSON shape.)
+
+`plan` permission mode (`Shift+Tab` in the TUI) denies every non-`ReadOnly`
+call without prompting, so the model learns to describe the change
+instead of making it.
+
+## Example 4: big output is lossless, not lost
+
+Tools return their **full** output; the core archives it *before* the
+model sees anything. The model sees head + tail lines plus a pointer:
+
+```text
+line 1
+line 2
+[… 84 KiB archived; expand #01J9… lines 3–8210]
+line 8211
+```
+
+Read the rest any time — you see exactly what the model saw, plus more:
+
+```bash
+./target/debug/cox expand 01J9…              # full archived output
+./target/debug/cox expand 01J9… --lines 60-90
+```
+
+Two refinements keep the window small without losing evidence:
+
+- **Dedup:** an identical read-only call within
+  `context.dedup_window_turns` (default 8) with no write to its subject
+  since returns `"unchanged since #<id>"` instead of the bytes again.
+- **Microcompaction:** tool results older than
+  `context.microcompact_after_turns` (default 6) become
+  `Pointer { archive, summary }` in new requests. The rollout on disk is
+  untouched — only what the model is (re)sent shrinks.
+
+## What the model sees: the cache-stable prefix
+
+Every request is laid out so the stable bytes come first and the
+volatile bytes last (`plan.md` §1.9). Anthropic caches the stable
+prefix; OpenAI-compatible providers get the same order for free via
+automatic prefix caching:
+
+```text
+system[0]  tool schemas, sorted by name ............ byte-stable ┐
+system[1]  cox system prompt (versioned, no date) ... byte-stable │ breakpoint 1
+system[2]  AGENTS.md / skills index ................ byte-stable ┘
+system[3]  volatile: date, cwd, branch, memory ..... never cached
+messages   summary (if compacted) + history ........ breakpoint 2 (end of last turn)
+           this turn's messages ................... breakpoint 3 (moves)
+```
+
+The rule: touch `system[0..=2]` and you invalidate the cache for every
+later call. Discovering a deferred tool via `tool_search` does exactly
+that, once — the core emits a `Notice` explaining it. `cox stats --cache`
+shows whether the prefix is actually hitting.
+
+## When context runs out: compaction
+
+After a turn, when the last call's context tokens reach
+`context.compact_at` (default 75%) of the model's window — or on
+`/compact [focus]`, or on a context-length error — the core summarises
+every turn but the last `keep_turns` (default 2) with the cheap tier,
+appends one `Summary` item, and emits:
+
+```json
+{"type":"compacted","summary":"…","dropped":["…"],"before_tokens":150000,"after_tokens":9000}
+```
+
+Append-only: the rollout keeps every original line; `dropped` ids are
+just skipped when building future requests. Early turns keep their
+verbatim text right up until they are summarised.
+
+## Where it lands on disk
+
+Under `~/.cox/` (`COX_HOME` overrides; never touch the real home in
+tests — use `COX_HOME=/tmp/cox-scratch`):
+
+```text
+~/.cox/
+  config.toml                 effective config (see cox config show --sources)
+  cox.db                      sessions, per-request usage ledger, archive index, memory FTS
+  sessions/<ulid>.jsonl       the rollout: one Event per line, resume + replay source
+  archive/<ulid>              tool outputs over 16 KiB (smaller ones inline in the db)
+  checkpoints/<hash>/         one private bare git repository per workspace root (below)
+  logs/cox.log                tracing log
+```
+
+Every provider call writes one `usage` row (model, input/output, cache
+read/write, cost). `cox stats --day`, `cox stats --month`, and
+`cox stats --cache` read the ledger; session/monthly caps in
+`[budget]` stop the turn with `TurnDone{Budget}` instead of a surprise.
+
+## Checkpoints: every write has a pre-image
+
+Before `edit`, `write` or `apply_patch` runs, cox reads the files the call
+names and archives their bytes (`checkpoints` row `pre`; `created` when the
+file did not exist). Around a call that names no path — `bash`, an MCP
+tool — cox snapshots the workspace before and after and archives the
+pre-image of every file that changed or disappeared (`deleted`). The row and
+the archive exist *before* the model sees the result; only then does
+`Event::Checkpoint { turn, call, files }` reach the surfaces. A marker row
+per user turn gives `/rewind` (T26.2) its timeline.
+
+The snapshot is `git add -A` + `write-tree` inside a private bare repository
+under `~/.cox/checkpoints/<hash>` whose work tree is the workspace root:
+your repository's index, hooks and `.git` are never touched, `.gitignore`
+still keeps `target/` out, and `GIT_ALTERNATE_OBJECT_DIRECTORIES` points at
+your repository's objects so unchanged blobs are never copied. The private
+index doubles as the stat cache, so a warm snapshot is one stat pass. A
+pre-image over 8 MiB is recorded without bytes. Without `git` on `PATH`,
+the session warns once and runs without checkpoints — never a failed turn.
+
+`/rewind` (or `Esc Esc` on an empty composer) lists the turns newest first
+— `T7 · 3 files · "add the cache column"` — and asks what to restore: code,
+conversation or both. Code walks the rows from the newest turn down to the
+chosen one and writes each earliest pre-image back (created files are
+removed, deleted ones return); every write is checkpointed first under a
+new turn number, so a rewind is itself undoable. Conversation appends an
+`Event::Rewound { to_turn }` marker: the in-memory history is cut there,
+the rollout keeps every line, and resume stops reading at the marker. The
+next turn keeps counting from where the session was (`T8` after a rewind
+to `T7`), so a turn number never means two things.
+
+## MCP servers that need a login
+
+An HTTP MCP server may answer the handshake with `401` and a `WWW-Authenticate` challenge. cox then runs the standard flow (authorization code with PKCE, dynamic client registration when the server offers it) through rmcp: in the TUI the login URL is printed and the browser opened, a listener on `127.0.0.1` takes the redirect, and the token is filed in the OS keyring as `cox/mcp/<name>`. From then on the token is attached to every request and refreshed before it expires. Headless surfaces (`cox run`, `cox acp`) never wait for a browser: the server is skipped with the warning `run \`cox mcp login <name>\``, which runs the same flow outside a session. `cox mcp logout <name>` forgets the token, and `cox doctor` prints one `mcp auth <name>` row per HTTP server (`ok (expires in 3h)`, `expired`, `none`).
+
+## Worktrees: a task that must not touch this checkout
+
+`cox --worktree t42` runs the session in `_worktrees/<repo>-t42` on branch `t42`, creating both when they do not exist. The location and the name follow the workspace `worktrees` rule: the nearest ancestor of the repository that already holds `_worktrees/` (else a new one next to the repository, or `WT_ROOT`), a lower-case branch cut from a freshly fetched `origin/<default>` with no upstream, and a lock whose reason names the owner (`cox / pid 123 | t42 | 2026-09-22`). The main checkout stays a second workspace root, so the model can read it but every edit lands in the worktree; the status line shows `⎇ t42 +3 −1 · ⧉ t42`, and the presence record carries the worktree path. `/quit` on a clean worktree asks whether to remove it; a dirty one is kept and said so. The branch is never deleted — merging is the user's action. A subagent gets the same thing with `agent(isolation: "worktree")`: its worktree is named after the task id, its answer ends with `[worktree <path>, branch <name>]`, and the worktree outlives the task. Another owner's lock (`Cursor / grok | …`) is never reused or removed.
+
+## The four surfaces (one stream each)
+
+| Surface | Command | What it does with `Event`s |
+|---|---|---|
+| TUI | `cox [PROMPT]` | renders transcript, diffs, approval modal, status line |
+| Headless | `cox run -p … --output-format text\|json\|stream-json` | prints the stream for scripts |
+| Editor | `cox acp` | maps `Event` → ACP `session/update` (see `docs/ide.md`) |
+| Other agents | `cox mcp [--allow-write] [--tools a,b]` | serves built-in tools, not the loop (see `docs/compat.md`) |
+
+Useful companions: `cox sessions --grep <q>` (find a rollout),
+`cox doctor` (keys, sandbox, stale price rows), `cox config show
+--sources` (which file each key came from), `cox ext list` (which
+instruction files, skills, commands, agents, hooks, MCP servers are in
+effect).
+
+## What leaves the session is redacted
+
+Anything cox persists or prints outside the session passes through one
+helper, `cox_core::redact::scrub`, which replaces five secret shapes with
+`«redacted»`: `sk-…` API keys, `Bearer …` tokens, AWS `AKIA…` key ids,
+GitHub `ghp_…` tokens, and PEM blocks (from `-----BEGIN …` through their
+`-----END` line). Nothing the model needs for the task passes through it —
+redacting model input would break tasks that legitimately handle keys.
+
+Scrubbed: the rollout lines for `TextDelta`, `ToolCallOutput` and
+`ToolCallDone` text (the copy `Store::rollout_append` receives; the
+in-memory history keeps the original), and `cox run`'s `stream-json`,
+`json` and `text` output. Not scrubbed: user text, tool-call input and
+thinking (model input), the live TUI/ACP transcript (that *is* the
+session), and the tool-output archive (lossless by default). When the
+scrub changes a tool result, the session raises `Notice(Security, "tool
+output contained a secret-shaped string; redacted in the rollout")` right
+behind it.
+
+Two known holes are deliberate: a secret split across streamed deltas is
+redacted per delta only, and `resume` rebuilds history from the scrubbed
+rollout — a resumed turn's model input is the redacted copy. The
+remaining surfaces (`cox sessions --grep` lines, `cox expand` output,
+`logs/cox.log` fields, `cox record`'s cassettes) follow in the T28.4b
+follow-up card.
+
+## Trust boundaries in one paragraph
+
+Model output, tool results, MCP responses, hook stdout, skill files, and
+repository instruction files are all untrusted. Four guards from
+`AGENTS.md` cover them, and this doc's examples each touched one: the
+**permission engine** authorises every call (Example 3); **path
+confinement** (`cox_tools::path::confine`) rejects workspace escapes
+before a file tool runs; the **sandbox** confines shell commands unless
+the session chose `danger-full-access`; terminal **sanitisation**
+strips escape sequences and bidi overrides before anything the model or
+a tool wrote is displayed. A broken hook, skill, or MCP server is a
+warning and an absence, never a fatal error.

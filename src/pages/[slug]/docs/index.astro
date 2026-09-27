@@ -1,0 +1,202 @@
+---
+// Docs overview per product: how the product works and where to go next. Composition:
+// hero + command strip → numbered step rail → concept/code split → bento of doc paths →
+// table + notice → FAQ disclosures → next steps. Copy: src/data/docs-overview.ts.
+import { getCollection } from "astro:content";
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+import Icon from "../../../components/Icon.astro";
+import { getProductDocs, productsWithDocs, docsHref, docCodeBlock } from "../../../lib/docs";
+import { OVERVIEWS } from "../../../data/docs-overview";
+import { renderInline, renderMd } from "../../../lib/sections";
+import { u } from "../../../lib/site";
+
+export async function getStaticPaths() {
+  const tools = await getCollection("projects");
+  const withDocs = new Set(productsWithDocs());
+  return tools.filter((t) => withDocs.has(t.id)).map((tool) => ({ params: { slug: tool.id }, props: { tool } }));
+}
+
+const { tool } = Astro.props;
+const d = tool.data;
+const docs = getProductDocs(tool.id);
+const o = OVERVIEWS[tool.id];
+const bySlug = new Map(docs.pages.map((p) => [p.slug, p]));
+const next = (o?.next ?? []).map((s) => bySlug.get(s)).filter(Boolean) as typeof docs.pages;
+const first = docs.pages[0];
+const lead = o?.lead ?? d.tagline;
+const shortSha = docs.source?.sha.slice(0, 7);
+
+/* Bento packing: dense first-fit on a 3-column (≥1100px) and a 2-column grid; the lead group is
+   two columns wide, a group with 4+ pages is two rows tall (3-col only), and tiles grow right
+   into any free cells so no row ends with a hole. */
+type Tile = { w: number; h: number };
+function pack(tiles: Tile[], cols: number): Tile[] {
+  const grid: boolean[][] = [];
+  const free = (r: number, c: number) => !(grid[r]?.[c]);
+  const out = tiles.map((t) => ({ ...t, r: 0, c: 0 }));
+  for (const t of out) {
+    t.w = Math.min(t.w, cols);
+    placing: for (let r = 0; ; r++) for (let c = 0; c + t.w <= cols; c++) {
+      let ok = true;
+      for (let dr = 0; dr < t.h && ok; dr++) for (let dc = 0; dc < t.w && ok; dc++) ok = free(r + dr, c + dc);
+      if (ok) {
+        for (let dr = 0; dr < t.h; dr++) for (let dc = 0; dc < t.w; dc++) (grid[r + dr] ??= [])[c + dc] = true;
+        Object.assign(t, { r, c });
+        break placing;
+      }
+    }
+  }
+  for (const t of out) {
+    while (t.c + t.w < cols && [...Array(t.h).keys()].every((dr) => free(t.r + dr, t.c + t.w))) {
+      for (let dr = 0; dr < t.h; dr++) (grid[t.r + dr] ??= [])[t.c + t.w] = true;
+      t.w++;
+    }
+  }
+  return out;
+}
+const want3 = docs.groups.map((g, i) => ({ w: i === 0 ? 2 : 1, h: i > 0 && g.pages.length >= 4 ? 2 : 1 }));
+const want2 = docs.groups.map((_, i) => ({ w: i === 0 ? 2 : 1, h: 1 }));
+const lay3 = pack(want3, 3);
+const lay2 = pack(want2, 2);
+---
+<DocsLayout tool={tool} current={null} title={`${d.title} docs — how it works and where to start`} description={lead.replace(/`/g, "")} wide>
+  <section class="dhero" aria-labelledby="dhero-title">
+    <div class="dhero__copy">
+      <p class="eyebrow">{o?.eyebrow ?? `${d.title} documentation`}</p>
+      <h1 id="dhero-title" class="dhero__title">{o?.headline ?? d.tagline}</h1>
+      <p class="lead" set:html={renderInline(lead)} />
+      <div class="hero__ctas">
+        {first && <a class="btn btn--primary btn--lg" href={docsHref(tool.id, first.slug)}>Start with {first.navTitle} <span aria-hidden="true">→</span></a>}
+        <a class="btn btn--glass btn--lg" href={u(`/${tool.id}/`)}>About {d.title}</a>
+      </div>
+      <p class="dhero__src">{docs.pages.length} pages from <a href={`https://github.com/${docs.source?.repo ?? `listepo/${tool.id}`}/tree/${docs.source?.ref ?? "main"}/docs`} rel="noopener"><code>{docs.source?.repo ?? `listepo/${tool.id}`}/docs</code></a>{shortSha && <> at <code>{shortSha}</code></>}, v{d.version}</p>
+    </div>
+    {o && (
+      <ol class="cmdstrip glass glass--thick" aria-label="Commands to get going">
+        {o.strip.map((s, i) => (
+          <li class="cmdstrip__row">
+            <span class="cmdstrip__n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            <span class="cmdstrip__label">{s.label}</span>
+            <Fragment set:html={docCodeBlock(s.cmd, "bash")} />
+          </li>
+        ))}
+      </ol>
+    )}
+  </section>
+
+  {o && (
+    <section class="dsec" aria-labelledby="how-title">
+      <header class="section__head">
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title" class="h2">From install to first result.</h2>
+      </header>
+      <ol class="rail">
+        {o.steps.map((s, i) => (
+          <li class="rail__step" style={`--i:${i}`}>
+            <span class="rail__n" aria-hidden="true">{i + 1}</span>
+            <div class="rail__body">
+              <h3 class="h3">{s.title}</h3>
+              <p set:html={renderInline(s.text)} />
+              {s.cmd && <Fragment set:html={docCodeBlock(s.cmd, "bash")} />}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  {o && (
+    <section class="dsec split" aria-labelledby="concept-title">
+      <div class="split__copy">
+        <p class="eyebrow">{o.concept.eyebrow}</p>
+        <h2 id="concept-title" class="h2">{o.concept.title}</h2>
+        <div class="prose prose--tight" set:html={renderMd(o.concept.body)} />
+      </div>
+      <figure class="split__code glass">
+        <Fragment set:html={docCodeBlock(o.concept.code, o.concept.lang)} />
+        <figcaption>{o.concept.caption}</figcaption>
+      </figure>
+    </section>
+  )}
+
+  <section class="dsec" aria-labelledby="paths-title">
+    <header class="section__head">
+      <p class="eyebrow">Paths into the docs</p>
+      <h2 id="paths-title" class="h2">Pick where to go next.</h2>
+    </header>
+    <ul class="bento" role="list">
+      {docs.groups.map((g, gi) => (
+        <li class:list={["bento__tile glass shine", { "bento__tile--lead": gi === 0, "bento__tile--cols": lay3[gi].w >= 2 && g.pages.length >= 4 }]} style={`--c3:span ${lay3[gi].w};--r3:span ${lay3[gi].h};--c2:span ${lay2[gi].w}`}>
+          <p class="bento__label">{g.label}<span>{g.pages.length} {g.pages.length === 1 ? "page" : "pages"}</span></p>
+          <ul class="bento__list" role="list">
+            {g.pages.map((p, pi) => (
+              <li>
+                <a class="bento__link" href={docsHref(tool.id, p.slug)}>
+                  <strong>{p.navTitle}<span aria-hidden="true"> →</span></strong>
+                  {(gi === 0 || pi < 3) && p.summary && <small>{p.summary}</small>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {o && (
+    <section class="dsec duo" aria-labelledby="table-title">
+      <div class="duo__table">
+        <p class="eyebrow">{o.table.eyebrow}</p>
+        <h2 id="table-title" class="h3 duo__title">{o.table.title}</h2>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="table-title">
+          <table>
+            <thead><tr><th scope="col">{o.table.head[0]}</th><th scope="col">{o.table.head[1]}</th></tr></thead>
+            <tbody>{o.table.rows.map((r) => <tr><td set:html={renderInline(r[0])} /><td set:html={renderInline(r[1])} /></tr>)}</tbody>
+          </table>
+        </div>
+      </div>
+      <aside class:list={["callout", `callout--${o.notice.kind}`, "duo__notice"]}>
+        <p class="callout__label"><Icon name="info" size={16} /> {o.notice.label}</p>
+        <p set:html={renderInline(o.notice.text)} />
+      </aside>
+    </section>
+  )}
+
+  {o && (
+    <section class="dsec" aria-labelledby="faq-title">
+      <header class="section__head">
+        <p class="eyebrow">Questions the docs answer</p>
+        <h2 id="faq-title" class="h2">Good to know.</h2>
+      </header>
+      <div class="faq faq--docs">
+        {o.faq.map((f) => (
+          <details class="faq__item glass">
+            <summary>{f.q}</summary>
+            <div class="faq__body"><p set:html={renderInline(f.a)} /></div>
+          </details>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {next.length > 0 && (
+    <section class="dsec" aria-labelledby="next-title">
+      <header class="section__head">
+        <p class="eyebrow">Next steps</p>
+        <h2 id="next-title" class="h2">Read these first.</h2>
+      </header>
+      <ol class="nextcards" role="list">
+        {next.map((p, i) => (
+          <li>
+            <a class="nextcard glass shine card--lift" href={docsHref(tool.id, p.slug)}>
+              <span class="nextcard__n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+              <strong>{p.navTitle}</strong>
+              {p.summary && <small>{p.summary}</small>}
+              <span class="nextcard__go" aria-hidden="true">Read →</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+</DocsLayout>

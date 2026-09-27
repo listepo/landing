@@ -1,0 +1,48 @@
+---
+// Sticky horizontal docs navigation: product mark + "Docs", then one tab per page.
+// Overflow scrolls horizontally with edge fades and scroll-snap; below 768px a product with
+// more than 7 pages gets a compact "Section" disclosure instead of the strip.
+import type { ProductDocs } from "../lib/docs";
+import { docsHref } from "../lib/docs";
+
+interface Props { docs: ProductDocs; title: string; current: string | null }
+const { docs, title, current } = Astro.props;
+const items = [{ slug: null as string | null, navTitle: "Overview", group: "" }, ...docs.pages.map((p) => ({ slug: p.slug as string | null, navTitle: p.navTitle, group: p.group }))];
+const currentItem = items.find((i) => i.slug === current) ?? items[0];
+const compact = items.length > 7;
+---
+<nav class="dnav" aria-label={`${title} documentation`} data-dnav>
+  <div class="dnav__inner">
+    <a class="dnav__brand" href={docsHref(docs.product)}>
+      <span class="dnav__mark" aria-hidden="true">{title.slice(0, 2)}</span>
+      <span class="dnav__name">{title} <span>Docs</span></span>
+    </a>
+    <span class="dnav__sep" aria-hidden="true"></span>
+    <div class:list={["dnav__scroller", { "dnav__scroller--compact": compact }]} data-dnav-scroller>
+      <ul class="dnav__tabs" role="list">
+        {items.map((it, i) => (
+          <li class:list={[{ "dnav__gap": i > 1 && it.group !== items[i - 1].group }]}>
+            <a class="dnav__tab" href={docsHref(docs.product, it.slug ?? undefined)} aria-current={it.slug === current ? "page" : undefined}>{it.navTitle}</a>
+          </li>
+        ))}
+      </ul>
+      <span class="dnav__indicator" aria-hidden="true"></span>
+    </div>
+    {compact && (
+      <details class="dnav__sections" data-menu>
+        <summary class="dnav__summary"><span class="dnav__summary-k">Section</span> <span class="dnav__summary-v">{currentItem.navTitle}</span>
+          <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <div class="dnav__panel glass glass--thick">
+          <a class="dnav__item" href={docsHref(docs.product)} aria-current={current === null ? "page" : undefined}>Overview</a>
+          {docs.groups.map((g) => (
+            <div class="dnav__group">
+              <p class="dnav__group-label">{g.label}</p>
+              {g.pages.map((p) => <a class="dnav__item" href={docsHref(docs.product, p.slug)} aria-current={p.slug === current ? "page" : undefined}>{p.navTitle}</a>)}
+            </div>
+          ))}
+        </div>
+      </details>
+    )}
+  </div>
+</nav>

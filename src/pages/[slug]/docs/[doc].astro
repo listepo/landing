@@ -1,0 +1,43 @@
+---
+// One page per synced doc file (content/docs/<product>/**/*.md) plus site-authored pages
+// declared with `page` in src/data/docs-nav.json.
+import { getCollection } from "astro:content";
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+import KetchGettingStarted from "../../../components/docs/KetchGettingStarted.astro";
+import { getProductDocs, productsWithDocs, docsHref, type DocPage } from "../../../lib/docs";
+import type { Tool } from "../../../lib/catalog";
+
+/** Site-authored pages, keyed `<product>/<page>`. */
+const AUTHORED: Record<string, any> = { "ketch/getting-started": KetchGettingStarted };
+
+export async function getStaticPaths() {
+  const tools = await getCollection("projects");
+  const withDocs = new Set(productsWithDocs());
+  return tools
+    .filter((t) => withDocs.has(t.id))
+    .flatMap((tool) => getProductDocs(tool.id).pages.map((page) => ({ params: { slug: tool.id, doc: page.slug }, props: { tool, page } })));
+}
+
+const { tool, page } = Astro.props as { tool: Tool; page: DocPage };
+const d = tool.data;
+const docs = getProductDocs(tool.id);
+const Authored = page.file ? null : AUTHORED[`${tool.id}/${page.slug}`];
+const shortSha = docs.source?.sha.slice(0, 7);
+---
+<DocsLayout tool={tool} current={page.slug} title={`${page.title} — ${d.title} docs`} description={page.summary || `${page.title} — ${d.title} documentation.`} toc={page.toc} wide={!!Authored}>
+  {Authored ? <Authored tool={tool} page={page} /> : (
+    <article class="doc" aria-labelledby="doc-title">
+      <header class="doc__head">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href={docsHref(tool.id)}>{d.title} docs</a><span aria-hidden="true">/</span><span>{page.group}</span>
+        </nav>
+        <h1 id="doc-title" class="doc__title">{page.title}</h1>
+        <p class="doc__meta">
+          <span>From <code>docs/{page.file}</code>{shortSha && <> at <code>{shortSha}</code></>}</span>
+          {page.sourceUrl && <a href={page.sourceUrl} rel="noopener">View on GitHub <span aria-hidden="true">↗</span></a>}
+        </p>
+      </header>
+      <div class="prose prose--doc" set:html={page.html} />
+    </article>
+  )}
+</DocsLayout>

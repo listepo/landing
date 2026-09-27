@@ -1,9 +1,12 @@
 ---
 import "@fontsource-variable/inter";
+// Preload the Latin subset so text does not reflow when Inter replaces the fallback (CLS).
+import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import "../styles/global.css";
 import Icon from "../components/Icon.astro";
 import { u, BRAND, THEMES, type ThemeKey } from "../lib/site";
 import { getTools, proFor } from "../lib/catalog";
+import { productsWithDocs } from "../lib/docs";
 
 interface Props {
   title: string;
@@ -20,6 +23,9 @@ const og = new URL(u(`/images/${t.images}/og.jpg`), Astro.site).href;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const tools = await getTools();
 const current = tools.find((x) => x.id === theme);
+const withDocs = new Set(productsWithDocs());
+const docTools = tools.filter((x) => withDocs.has(x.id));
+const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
 ---
 <!doctype html>
 <html lang="en" style={vars} data-theme={theme}>
@@ -32,6 +38,7 @@ const current = tools.find((x) => x.id === theme);
     <meta name="theme-color" content={t.bg} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={u("/favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -80,6 +87,16 @@ const current = tools.find((x) => x.id === theme);
                       </li>
                     ))}
                   </ul>
+                  {docTools.length > 0 && (
+                    <>
+                      <p class="menu__label">Documentation</p>
+                      <ul class="menu__docs" role="list">
+                        {docTools.map((x) => (
+                          <li><a class="menu__doc" href={u(`/${x.id}/docs/`)} style={`--card-accent:${x.data.accent}`} aria-current={inDocs && x.id === theme ? "page" : undefined}><i aria-hidden="true"></i>{x.data.title} docs</a></li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                   <p class="menu__foot"><a href={u("/#catalog")}>Browse the catalog →</a><span>* Pro prices are placeholders</span></p>
                 </div>
               </details>
@@ -106,13 +123,14 @@ const current = tools.find((x) => x.id === theme);
         <nav aria-label="Footer">
           <ul class="footer__links">
             {tools.map((x) => <li><a href={u(`/${x.id}/`)}>{x.data.title}</a></li>)}
+            {docTools.map((x) => <li><a href={u(`/${x.id}/docs/`)}>{x.data.title} docs</a></li>)}
             <li><a href={u("/#pricing")}>Pricing</a></li>
             <li><a href={u("/#faq")}>FAQ</a></li>
             <li><a href="https://github.com/listepo">GitHub</a></li>
           </ul>
         </nav>
       </div>
-      <p>A storefront for AI developer tools. Every tool has a free open-source edition; Pro tiers, their prices and Pro features shown on this site are placeholders. Product facts come from each tool’s own README and site copy.</p>
+      <p>A storefront for AI developer tools. Every tool has a free open-source edition; Pro tiers, their prices and Pro features shown on this site are placeholders. Product facts come from each tool’s own README, docs and site copy.</p>
     </footer>
 
     <script>

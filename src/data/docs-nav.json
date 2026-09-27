@@ -1,0 +1,87 @@
+{
+  "$comment": "Docs navigation per product. Files are paths relative to the product's docs/ folder as synced into content/docs/<product>/. A file listed nowhere (not in groups, not in exclude) still gets a page under the trailing 'More' group, and `npm run check:docs` warns about it. `exclude` maps a file (or a folder prefix ending in /) to the reason it has no page. `page` entries are site-authored pages (see src/pages/[slug]/docs/[doc].astro).",
+  "rtok": {
+    "groups": [
+      { "label": "Start", "items": [
+        { "file": "getting-started.md", "title": "Getting started" },
+        { "file": "config.md", "title": "Configuration" }
+      ] },
+      { "label": "Guides", "items": [
+        { "file": "agents.md", "title": "Agents" },
+        { "file": "cmd-rules.md", "title": "Command rules" },
+        { "file": "prompt-cache.md", "title": "Prompt cache" },
+        { "file": "lsp.md", "title": "LSP backend" },
+        { "file": "otel.md", "title": "OpenTelemetry" }
+      ] },
+      { "label": "Extend", "items": [
+        { "file": "plugin-authoring.md", "title": "Writing a plugin" }
+      ] },
+      { "label": "Background", "items": [
+        { "file": "comparison.md", "title": "Comparison" },
+        { "file": "report.md", "title": "PDF renderer" }
+      ] },
+      { "label": "Contributing", "items": [
+        { "file": "windows.md", "title": "Windows" },
+        { "file": "colima.md", "title": "Colima" }
+      ] }
+    ],
+    "exclude": {
+      "release.md": "Maintainer release runbook (signing, notarisation, registry publishing)",
+      "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud",
+      "plugin-plan-template.md": "Internal template for plugin proposals",
+      "research/": "Internal research notes",
+      "assets/": "Notes about image assets, not documentation"
+    }
+  },
+  "cox": {
+    "groups": [
+      { "label": "Start", "items": [
+        { "file": "getting-started.md", "title": "Getting started" },
+        { "file": "how-it-works.md", "title": "How it works" }
+      ] },
+      { "label": "Reference", "items": [
+        { "file": "config.md", "title": "Configuration", "summary": "Every cox configuration key with its default value, generated from config/default.toml." },
+        { "file": "tools.md", "title": "Tools" },
+        { "file": "ide.md", "title": "Editors" },
+        { "file": "observability.md", "title": "Observability" },
+        { "file": "compat.md", "title": "Compatibility" }
+      ] },
+      { "label": "Design", "items": [
+        { "file": "design/loop.md", "title": "Turn loop" },
+        { "file": "design/protocol.md", "title": "Protocol" },
+        { "file": "design/sandbox.md", "title": "Sandbox" },
+        { "file": "design/routing.md", "title": "Tier routing" },
+        { "file": "design/providers.md", "title": "Provider registry" },
+        { "file": "design/provider.md", "title": "Provider cost fields" },
+        { "file": "design/extensions.md", "title": "Extensions" }
+      ] }
+    ],
+    "exclude": {
+      "design/v0.2-": "Scope gates for a future v0.2, not current behaviour",
+      "design/improvement-plan-2026.md": "Roadmap proposal, not current behaviour",
+      "brand/": "Visual design system of the cox website",
+      "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud",
+      "assets/": "Notes about image assets, not documentation"
+    }
+  },
+  "ketch": {
+    "groups": [
+      { "label": "Start", "items": [
+        { "page": "getting-started", "title": "Getting started", "summary": "Install ketch, install your first tool from a GitHub release, and see what a verified install prints." },
+        { "file": "COMMANDS.md", "title": "Commands" }
+      ] },
+      { "label": "Guides", "items": [
+        { "file": "MANIFESTS.md", "title": "Manifests" },
+        { "file": "LOCKFILE.md", "title": "Lockfile" },
+        { "file": "REGISTRY.md", "title": "Registry" },
+        { "file": "PLUGINS.md", "title": "Source plugins" }
+      ] },
+      { "label": "Help", "items": [
+        { "file": "TROUBLESHOOTING.md", "title": "Troubleshooting" }
+      ] }
+    ],
+    "exclude": {
+      "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud"
+    }
+  }
+}
