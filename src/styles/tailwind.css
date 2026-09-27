@@ -1,0 +1,70 @@
+/* Tailwind v4 — theme + utilities only. No preflight: global.css stays the base layer, so
+   existing visuals do not change. Utilities are for responsive fixes in markup; they live in
+   @layer utilities, so a utility that must beat a rule from global.css (unlayered) uses the
+   important modifier, e.g. `tw:max-sm:px-3!`.
+   Every utility carries the `tw:` prefix: the site's own BEM classes (.container, .grid, .ring,
+   .hidden, .table …) share names with Tailwind utilities, and the prefix keeps the two apart.
+   The default theme is reset and replaced by the site's own tokens from global.css, so
+   `tw:gap-3`, `tw:p-s5`, `tw:text-muted`, `tw:rounded-md` resolve to the same values as the hand-written CSS. */
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+/* Scan only the site markup (not the synced Markdown in content/). */
+@source "../components";
+@source "../layouts";
+@source "../pages";
+@source "../lib";
+
+@theme inline {
+  --*: initial;
+
+  /* Breakpoints used by global.css media queries. */
+  --breakpoint-xs: 400px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-nav: 900px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Space: the 4/8 grid (--s-1 … --s-10). Numeric steps are multiples of 4px (gap-3 = 12px = --s-3). */
+  --spacing: 4px;
+  --spacing-s1: var(--s-1);
+  --spacing-s2: var(--s-2);
+  --spacing-s3: var(--s-3);
+  --spacing-s4: var(--s-4);
+  --spacing-s5: var(--s-5);
+  --spacing-s6: var(--s-6);
+  --spacing-s7: var(--s-7);
+  --spacing-s8: var(--s-8);
+  --spacing-s9: var(--s-9);
+  --spacing-s10: var(--s-10);
+  --container-site: var(--container);
+
+  /* Colour (theme-aware: --accent etc. change per page). */
+  --color-fg: var(--fg);
+  --color-fg-strong: var(--fg-strong);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-bg: var(--bg);
+  --color-hairline: var(--hairline);
+
+  /* Type */
+  --text-xs: var(--fs-xs);
+  --text-sm: var(--fs-sm);
+  --text-md: var(--fs-md);
+  --text-lg: var(--fs-lg);
+  --text-xl: var(--fs-xl);
+
+  /* Radii */
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-full: var(--r-full);
+
+  --ease-site: var(--ease);
+}

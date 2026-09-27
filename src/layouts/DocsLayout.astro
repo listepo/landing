@@ -7,7 +7,8 @@ import "../styles/docs.css";
 import type { Tool } from "../lib/catalog";
 import { accentsFor } from "../lib/catalog";
 import { getProductDocs, docsHref, type TocEntry } from "../lib/docs";
-import type { ThemeKey } from "../lib/site";
+import { BRAND, type ThemeKey } from "../lib/site";
+import { abs, clip, breadcrumbs, techArticle } from "../lib/seo";
 
 interface Props {
   tool: Tool;
@@ -18,17 +19,35 @@ interface Props {
   toc?: TocEntry[];
   /** Wide pages (overview, getting started) drop the prose column and TOC. */
   wide?: boolean;
+  /** Headline for structured data (defaults to the page title). */
+  headline?: string;
+  /** Group label of the page in the docs nav (TechArticle articleSection). */
+  section?: string;
+  /** GitHub URL of the source Markdown, when the page is synced from docs/. */
+  sourceUrl?: string | null;
 }
-const { tool, current, title, description, toc = [], wide = false } = Astro.props;
+const { tool, current, title, description, toc = [], wide = false, headline, section, sourceUrl } = Astro.props;
 const docs = getProductDocs(tool.id);
 const a = accentsFor(tool);
 const order = [{ slug: null as string | null, navTitle: "Overview" }, ...docs.pages.map((p) => ({ slug: p.slug as string | null, navTitle: p.navTitle }))];
 const idx = order.findIndex((o) => o.slug === current);
 const prev = idx > 0 ? order[idx - 1] : null;
 const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
+const url = abs(current ? `/${tool.id}/docs/${current}/` : `/${tool.id}/docs/`);
+const metaDescription = clip(description, 160);
+const crumbs = [
+  { name: BRAND, url: abs("/") },
+  { name: tool.data.title, url: abs(`/${tool.id}/`) },
+  { name: `${tool.data.title} docs`, url: abs(`/${tool.id}/docs/`) },
+  ...(current ? [{ name: order[idx]?.navTitle ?? title, url }] : []),
+];
+const jsonLd = [
+  techArticle(tool, { headline: headline ?? title, description: metaDescription, url, sourceUrl, section }),
+  breadcrumbs(crumbs),
+];
 const showToc = !wide && toc.filter((t) => t.depth === 2).length >= 3;
 ---
-<Base title={title} description={description} theme={tool.id as ThemeKey} accent={a.accent} accent2={a.accent2} accentLight={a.accentLight}>
+<Base title={title} description={metaDescription} theme={tool.id as ThemeKey} accent={a.accent} accent2={a.accent2} accentLight={a.accentLight} ogType="article" imageAlt={`${tool.data.title} — ${tool.data.tagline}`} jsonLd={jsonLd}>
   <DocsNav docs={docs} title={tool.data.title} current={current} />
   <div class:list={["docs container", { "docs--wide": wide, "docs--toc": showToc }]}>
     <div class="docs__main">

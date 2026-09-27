@@ -35,6 +35,11 @@ jobs:
         run: npm run check:docs
         env:
           SITE_BASE: /landing/
+      - name: Check SEO meta, headings, alt text, JSON-LD and sitemap
+        run: npm run check:seo
+        env:
+          SITE_URL: https://listepo.github.io
+          SITE_BASE: /landing/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

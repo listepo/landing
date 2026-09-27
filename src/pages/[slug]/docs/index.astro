@@ -9,6 +9,7 @@ import { getProductDocs, productsWithDocs, docsHref, docCodeBlock } from "../../
 import { OVERVIEWS } from "../../../data/docs-overview";
 import { renderInline, renderMd } from "../../../lib/sections";
 import { u } from "../../../lib/site";
+import { clip } from "../../../lib/seo";
 
 export async function getStaticPaths() {
   const tools = await getCollection("projects");
@@ -25,6 +26,8 @@ const next = (o?.next ?? []).map((s) => bySlug.get(s)).filter(Boolean) as typeof
 const first = docs.pages[0];
 const lead = o?.lead ?? d.tagline;
 const shortSha = docs.source?.sha.slice(0, 7);
+/* Meta description: distinct from the Getting started page (which opens with the same lead). */
+const overviewDescription = clip(`${d.title} documentation: ${(o?.headline ?? d.tagline).replace(/\.$/, "")}. ${docs.pages.length} pages — ${docs.groups.map((g) => g.label).join(", ")}.`, 160);
 
 /* Bento packing: dense first-fit on a 3-column (≥1100px) and a 2-column grid; the lead group is
    two columns wide, a group with 4+ pages is two rows tall (3-col only), and tiles grow right
@@ -59,7 +62,7 @@ const want2 = docs.groups.map((_, i) => ({ w: i === 0 ? 2 : 1, h: 1 }));
 const lay3 = pack(want3, 3);
 const lay2 = pack(want2, 2);
 ---
-<DocsLayout tool={tool} current={null} title={`${d.title} docs — how it works and where to start`} description={lead.replace(/`/g, "")} wide>
+<DocsLayout tool={tool} current={null} title={`${d.title} docs — how it works and where to start`} description={overviewDescription} headline={o?.headline ?? `${d.title} documentation`} wide>
   <section class="dhero" aria-labelledby="dhero-title">
     <div class="dhero__copy">
       <p class="eyebrow">{o?.eyebrow ?? `${d.title} documentation`}</p>

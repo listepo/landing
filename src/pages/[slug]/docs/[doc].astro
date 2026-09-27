@@ -24,7 +24,7 @@ const docs = getProductDocs(tool.id);
 const Authored = page.file ? null : AUTHORED[`${tool.id}/${page.slug}`];
 const shortSha = docs.source?.sha.slice(0, 7);
 ---
-<DocsLayout tool={tool} current={page.slug} title={`${page.title} — ${d.title} docs`} description={page.summary || `${page.title} — ${d.title} documentation.`} toc={page.toc} wide={!!Authored}>
+<DocsLayout tool={tool} current={page.slug} title={`${page.title} — ${d.title} docs`} description={page.summary || `${page.title} — ${d.title} documentation.`} toc={page.toc} wide={!!Authored} headline={page.title} section={page.group} sourceUrl={page.sourceUrl}>
   {Authored ? <Authored tool={tool} page={page} /> : (
     <article class="doc" aria-labelledby="doc-title">
       <header class="doc__head">

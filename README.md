@@ -17,12 +17,13 @@ npm i
 npm run dev       # http://localhost:4321/landing/
 npm run build     # static site in dist/
 npm run check:docs  # after a build: docs coverage, headings, internal links under the base
+npm run check:seo   # after a build: title/description/canonical/OG per page, one h1, alt, JSON-LD, sitemap
 npm run preview   # serve dist
 ```
 
 `astro.config.mjs` reads `SITE_URL` (default `https://listepo.github.io`) and `SITE_BASE` (default
 `/landing/`). Every internal link and asset goes through `u()` in `src/lib/site.ts`, so moving the site is a
-one-line change. `.github/workflows/pages.yml` builds, runs `check:docs` and deploys on every push to
+one-line change. `.github/workflows/pages.yml` builds, runs `check:docs` and `check:seo` and deploys on every push to
 `main`; pull requests run the build and the check without deploying.
 
 ## Structure
@@ -42,12 +43,21 @@ one-line change. `.github/workflows/pages.yml` builds, runs `check:docs` and dep
   commit on GitHub), builds the TOC and summaries; `src/data/docs-nav.json` — tab order, titles,
   groups and exclusions; `src/layouts/DocsLayout.astro` + `src/components/DocsNav.astro` — the sticky
   horizontal docs nav, ~70ch column, on-page TOC (≥1280px) and prev/next; `src/styles/docs.css`.
-- `scripts/check-docs.mjs` — post-build check run in CI.
+- `scripts/check-docs.mjs`, `scripts/check-seo.mjs` — post-build checks run in CI.
+- `src/lib/seo.ts` — titles, meta descriptions and schema.org JSON-LD (Organization/WebSite on the home
+  page, SoftwareApplication + BreadcrumbList per product, TechArticle + BreadcrumbList per docs page);
+  values come from the content only — no ratings, and Pro placeholder prices never reach structured data.
+  `@astrojs/sitemap` writes the sitemap; `src/pages/robots.txt.ts` points to it.
 - `src/components/` — `Terminal` (animated demo of real README commands), `TokenBitset` (rtok),
   `Flow` (cox event stream, ketch install/rollback), `Picture`, `Icon`.
 - `src/data/showcase.ts` — terminal scripts and flow steps; `src/lib/site.ts` — brand, themes, license,
   caveats, Pro placeholders; `src/lib/catalog.ts` — collection helpers.
 - `src/styles/global.css` — the design system; `src/scripts/main.ts` — progressive enhancement.
+- `src/styles/tailwind.css` — Tailwind v4 (`@tailwindcss/vite`), theme + utilities only, **no preflight**,
+  default theme replaced by the tokens from `global.css`. Responsive fixes go in markup as prefixed
+  utilities (`tw:max-sm:px-3!`); the `tw:` prefix keeps them apart from the site's own class names
+  (`.container`, `.grid`, `.ring` …), and `!` is needed where a utility must beat a rule in `global.css`
+  (unlayered CSS wins over `@layer utilities`). Do not add new hand-written CSS for layout fixes.
 - `art/` — scripts that draw the 11 images in `public/images/` (4 hero, 3 props, 4 OG cards) as SVG,
   render them with headless Chrome and encode AVIF/WebP/JPEG with sharp.
 
