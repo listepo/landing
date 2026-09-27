@@ -1,0 +1,19 @@
+---
+// rtok token bitset illustration: 16 blocks settle into kept / thinned / cut and a Δtok counter
+// counts the removed ones. Illustration of the idea only — not a measurement.
+const target = "KKTCKCKTTKKCKTKK".split("");
+const removed = target.filter((c) => c !== "K").length;
+---
+<div class="bitset glass" data-bitset aria-labelledby="bitset-title">
+  <div class="bitset__head">
+    <h3 id="bitset-title" class="h3">Context, block by block</h3>
+    <p class="bitset__counter"><span class="bitset__delta" aria-hidden="true">Δtok</span> <span data-bitset-count>−{removed}</span><span class="muted"> / 16 blocks</span></p>
+  </div>
+  <ol class="bitset__grid" aria-hidden="true">
+    {target.map((c) => <li class="bit" data-target={c} data-state={c}></li>)}
+  </ol>
+  <ul class="legend legend--row">
+    <li><i class="k"></i>kept</li><li><i class="t"></i>thinned</li><li><i class="c"></i>cut — still retrievable with <code>rtok expand &lt;id&gt;</code></li>
+  </ul>
+  <p class="muted small">Illustration, not a measurement: {16 - removed} blocks kept, {removed} thinned or cut. In rtok a saving only counts when a Measurement row records it.</p>
+</div>

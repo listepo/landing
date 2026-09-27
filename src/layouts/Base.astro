@@ -1,0 +1,122 @@
+---
+import "@fontsource-variable/inter";
+import "../styles/global.css";
+import Icon from "../components/Icon.astro";
+import { u, BRAND, THEMES, type ThemeKey } from "../lib/site";
+import { getTools, proFor } from "../lib/catalog";
+
+interface Props {
+  title: string;
+  description: string;
+  theme: ThemeKey;
+  accent?: string;
+  accent2?: string;
+  accentLight?: string;
+}
+const { title, description, theme, ...over } = Astro.props;
+const t = { ...THEMES[theme], ...Object.fromEntries(Object.entries(over).filter(([, v]) => v)) };
+const vars = `--accent:${t.accent};--accent-2:${t.accent2};--accent-light:${t.accentLight};--bg:${t.bg}`;
+const og = new URL(u(`/images/${t.images}/og.jpg`), Astro.site).href;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const tools = await getTools();
+const current = tools.find((x) => x.id === theme);
+---
+<!doctype html>
+<html lang="en" style={vars} data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content={t.bg} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={u("/favicon.svg")} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="mesh" aria-hidden="true">
+      <span class="mesh__blob mesh__blob--1"></span>
+      <span class="mesh__blob mesh__blob--2"></span>
+      <span class="mesh__blob mesh__blob--3"></span>
+      <span class="mesh__blob mesh__blob--4"></span>
+      <span class="mesh__blob mesh__blob--5"></span>
+      <span class="mesh__grid"></span>
+      <span class="mesh__grain"></span>
+    </div>
+
+    <header class="nav">
+      <div class="nav__inner">
+        <a class="brand" href={u("/")} aria-label={`${BRAND} home`}>
+          <span class="brand__mark" aria-hidden="true"></span>
+          <span>listepo <span class="brand__sub">tools</span></span>
+        </a>
+        <nav aria-label="Primary">
+          <ul class="nav__links">
+            <li class="menu">
+              <details class="menu__details" data-menu>
+                <summary class="menu__trigger" aria-current={current ? "page" : undefined}>
+                  Products{current && <span class="menu__current">· {current.data.title}</span>}
+                  <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </summary>
+                <div class="menu__panel glass glass--thick">
+                  <p class="menu__label">All products · {tools.length}</p>
+                  <ul class="menu__grid">
+                    {tools.map((x) => (
+                      <li>
+                        <a class="menu__item shine" href={u(`/${x.id}/`)} style={`--card-accent:${x.data.accent}`} aria-current={x.id === theme ? "page" : undefined}>
+                          <span class="menu__mark" aria-hidden="true">{x.data.title.slice(0, 2)}</span>
+                          <span class="menu__text"><strong>{x.data.title} <span class="menu__ver">v{x.data.version}</span></strong><small>{x.data.tagline}</small></span>
+                          <span class="menu__price">Free · Pro {proFor(x).price}*</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  <p class="menu__foot"><a href={u("/#catalog")}>Browse the catalog →</a><span>* Pro prices are placeholders</span></p>
+                </div>
+              </details>
+            </li>
+            <li><a href={u("/#how")}>How it works</a></li>
+            <li><a href={u("/#pricing")}>Pricing</a></li>
+            <li><a href={u("/#faq")}>FAQ</a></li>
+          </ul>
+        </nav>
+        <div class="nav__actions">
+          <a class="btn btn--glass nav__gh" href="https://github.com/listepo"><Icon name="github" size={16} /> GitHub</a>
+          <a class="btn btn--primary" href={u("/#catalog")}>Browse tools</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="footer container">
+      <div class="footer__row">
+        <a class="brand" href={u("/")}><span class="brand__mark" aria-hidden="true"></span><span>listepo <span class="brand__sub">tools</span></span></a>
+        <nav aria-label="Footer">
+          <ul class="footer__links">
+            {tools.map((x) => <li><a href={u(`/${x.id}/`)}>{x.data.title}</a></li>)}
+            <li><a href={u("/#pricing")}>Pricing</a></li>
+            <li><a href={u("/#faq")}>FAQ</a></li>
+            <li><a href="https://github.com/listepo">GitHub</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p>A storefront for AI developer tools. Every tool has a free open-source edition; Pro tiers, their prices and Pro features shown on this site are placeholders. Product facts come from each tool’s own README and site copy.</p>
+    </footer>
+
+    <script>
+      import "../scripts/main.ts";
+    </script>
+  </body>
+</html>

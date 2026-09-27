@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cox — a modular terminal coding agent in Rust</title>
+  <meta name="description" content="cox is a modular terminal coding agent in Rust: interactive TUI, headless automation, ACP editor integration and MCP tools.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<!-- Source of truth: README.md of github.com/listepo/cox. Do not add facts, stats or benchmarks that are not in the README. -->
+<body class="project project--cox">
+  <!--@include nav-->
+
+  <main id="main" tabindex="-1">
+    <section class="p-hero container" aria-labelledby="p-title">
+      <div class="p-hero__copy">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/#open-source">Open source</a><span aria-hidden="true">/</span><span aria-current="page">cox</span></nav>
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Under active development · Rust</p>
+        <h1 id="p-title" class="p-hero__title">cox<span>.</span></h1>
+        <p class="lead">A modular terminal coding agent in Rust. Named for the coxswain: it steers the work while models, tools and extensions row — one reliable, testable agent core with several ways to use it.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href="https://github.com/listepo/cox"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg> View on GitHub</a>
+          <a class="btn btn--ghost btn--lg" href="#install">Install</a>
+          <a class="btn btn--ghost btn--lg" href="https://listepo.github.io/cox/">Documentation</a>
+        </div>
+      </div>
+      <div class="terminal glass" aria-label="Example terminal session" role="img">
+        <div class="terminal__bar" aria-hidden="true"><i></i><i></i><i></i><span>cox — 60-second start</span></div>
+        <pre class="code"><code><span class="p">$ </span>mise exec -- cargo build -p cox
+<span class="p">$ </span>export ANTHROPIC_API_KEY=sk-...  # or OPENAI_API_KEY
+<span class="p">$ </span>./target/debug/cox doctor
+<span class="p">$ </span>./target/debug/cox run -p &quot;create hello.txt containing hi&quot;
+<span class="p">$ </span>./target/debug/cox  # interactive TUI: Enter sends, Esc interrupts</code></pre>
+      </div>
+    </section>
+
+    <section class="section container" aria-labelledby="features-title">
+      <header class="section__head">
+        <p class="kicker">One core, many surfaces</p>
+        <h2 id="features-title" class="h2">Built on four design principles.</h2>
+      </header>
+      <ul class="grid grid--features" role="list">
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m7 9 3 3-3 3m5 0h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Interactive TUI</h3>
+          <p class="muted">Enter sends, Esc interrupts; <code class="inline-code">y</code>/<code class="inline-code">s</code>/<code class="inline-code">n</code> answer approval prompts, <code class="inline-code">/model</code> switches tiers, <code class="inline-code">/compact</code> compacts now.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M13 3 5 13h6l-1 8 8-10h-6l1-8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Headless automation</h3>
+          <p class="muted"><code class="inline-code">cox run -p</code> drives headless scripts from the same agent core.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 20h4L19 9l-4-4L4 16v4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Editors &amp; other agents</h3>
+          <p class="muted"><code class="inline-code">cox acp</code> serves Zed and JetBrains through ACP, and MCP tools are exposed for other agents.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 8c3 0 3-3 6-3s3 3 6 3 3-3 6-3M3 14c3 0 3-3 6-3s3 3 6 3 3-3 6-3M3 20c3 0 3-3 6-3s3 3 6 3 3-3 6-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">One event stream</h3>
+          <p class="muted">Submissions enter a pure core state machine and typed events leave it. Every surface consumes the same events.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Safe by default</h3>
+          <p class="muted">Permission decisions are centralized, model paths stay inside the workspace, and shell commands run in a sandbox unless you choose otherwise.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Lossless context, visible costs</h3>
+          <p class="muted">Full tool output is archived before shortening and stays retrievable by ID. Provider usage is recorded per request; costs land in <code class="inline-code">cox stats</code>.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section container" id="install" aria-labelledby="install-title">
+      <header class="section__head">
+        <p class="kicker">Get started</p>
+        <h2 id="install-title" class="h2">Build it and run your first task.</h2>
+      </header>
+      <div class="p-steps">
+        <div class="card glass p-step">
+          <h3 class="h3">Clone and build</h3>
+          <p class="muted">Rust is pinned through mise; run Cargo through mise rather than a global toolchain.</p>
+          <pre class="code"><code><span class="p">$ </span>git clone https://github.com/listepo/cox &amp;&amp; cd cox
+<span class="p">$ </span>mise exec -- cargo build -p cox</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Check and run</h3>
+          <p class="muted">Set a provider key, check your setup, then run headless or open the TUI.</p>
+          <pre class="code"><code><span class="p">$ </span>export ANTHROPIC_API_KEY=sk-...  # or OPENAI_API_KEY
+<span class="p">$ </span>./target/debug/cox doctor
+<span class="p">$ </span>./target/debug/cox run -p &quot;create hello.txt containing hi&quot;</code></pre>
+        </div>
+      </div>
+      <p class="p-note" style="margin-top:var(--s-6)">Status from the README: cox is under active development. APIs, configuration and installation instructions are not yet stable.</p>
+    </section>
+
+    <section class="section container" aria-labelledby="usage-title">
+      <header class="section__head">
+        <p class="kicker">Reference</p>
+        <h2 id="usage-title" class="h2">Workspace layout.</h2>
+      </header>
+      <div class="table-wrap glass">
+        <table class="table">
+          <thead><tr><th scope="col">Crate</th><th scope="col">Responsibility</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline-code">crates/cox</code></td><td class="muted">CLI surface and dispatch</td></tr>
+<tr><td><code class="inline-code">crates/cox-protocol</code></td><td class="muted">Shared types and traits</td></tr>
+<tr><td><code class="inline-code">crates/cox-core</code></td><td class="muted">Agent state machine, context, permissions, budgets</td></tr>
+<tr><td><code class="inline-code">crates/cox-provider</code></td><td class="muted">Provider adapters and replay fixtures</td></tr>
+<tr><td><code class="inline-code">crates/cox-tools</code></td><td class="muted">Built-in tools, path confinement, sandbox</td></tr>
+<tr><td><code class="inline-code">crates/cox-store</code></td><td class="muted">SQLite sessions, archives, usage ledger</td></tr>
+<tr><td><code class="inline-code">crates/cox-ext</code></td><td class="muted">Instructions, skills, commands, hooks</td></tr>
+<tr><td><code class="inline-code">crates/cox-tui</code></td><td class="muted">Terminal UI</td></tr>
+<tr><td><code class="inline-code">crates/cox-acp / cox-mcp</code></td><td class="muted">Editor and MCP integrations</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="container" aria-labelledby="cta-title">
+      <div class="cta glass">
+        <div>
+          <h2 id="cta-title" class="h2">Steer the work. Let the models row.</h2>
+          <p class="muted">Dual/triple licensed: GNU GPLv3, a royalty-free license for proprietary desktop, mobile and web apps (with attribution), or a commercial license.</p>
+        </div>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="https://github.com/listepo/cox"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg> github.com/listepo/cox</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!--@include footer-->
+</body>
+</html>

@@ -1,0 +1,260 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Picture from "../components/Picture.astro";
+import Terminal from "../components/Terminal.astro";
+import TokenBitset from "../components/TokenBitset.astro";
+import FlowViz from "../components/Flow.astro";
+import CodeGraph from "../components/CodeGraph.astro";
+import TokenParticles from "../components/TokenParticles.astro";
+import CoxScenes from "../components/CoxScenes.astro";
+import KetchRoute from "../components/KetchRoute.astro";
+import { u, LICENSE, CAVEATS, THEMES, FREE_HIGHLIGHTS, type ThemeKey } from "../lib/site";
+import { proFor } from "../lib/catalog";
+import { DEMOS, FLOWS, COX_SCENES, demoFromUsage } from "../data/showcase";
+import { splitSections, parseFeatures, parseUsage, parseLinks, renderMd, codeBlock } from "../lib/sections";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const slug = entry.id as ThemeKey;
+const theme = THEMES[slug] ?? THEMES.home;
+const s = splitSections(entry.body ?? "");
+const overview = renderMd(s["overview"] ?? "");
+const features = parseFeatures(s["features"]);
+const installHtml = renderMd(s["install"] ?? "");
+const usage = parseUsage(s["usage examples"] ?? s["usage"]);
+const links = parseLinks(s["links"]);
+const caveat = CAVEATS[slug];
+const demo = DEMOS[slug] ?? demoFromUsage(d.title, usage.map((g) => ({ code: g.code })));
+const flow = FLOWS[slug];
+const pro = proFor(entry);
+
+const iconSets: Record<string, string[]> = {
+  rtok: ["plug", "terminal", "undo", "graph", "layers", "chart", "box", "eye"],
+  cox: ["stream", "shield", "undo", "coin", "layers", "terminal", "editor", "eye"],
+  ketch: ["download", "shield", "app", "tree", "history", "lock", "plug", "box"],
+};
+const icons = iconSets[slug] ?? iconSets.rtok;
+const heroAlt: Record<string, string> = {
+  rtok: "Abstract 4 by 4 grid of glass cubes: cyan cubes kept, dim cubes thinned, dashed coral outlines cut.",
+  cox: "Abstract interlocking glass rings glowing lime green on a dark background.",
+  ketch: "Abstract floating glass app window listing verified packages, with glass spheres around it.",
+};
+/* rtok bitset legend: 16 blocks in the art — 9 kept, 4 thinned, 3 cut (illustrative, not a measurement). */
+---
+<Base title={`${d.title} — ${d.tagline}`} description={d.tagline} theme={slug} accent={d.accent} accent2={d.accent2} accentLight={d.accentLight}>
+  <section class="hero container" aria-labelledby="p-title">
+    <div class="hero__copy">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href={u("/#open-source")}>Open source</a><span aria-hidden="true">/</span><span aria-current="page">{d.title}</span></nav>
+      <div class="p-meta">
+        <span class="badge badge--version">v{d.version}</span>
+        <span class="badge badge--line">{LICENSE.short}</span>
+      </div>
+      <h1 id="p-title" class="p-title">{d.title}<span>.</span></h1>
+      <p class="lead">{d.tagline}</p>
+      <div class="install-hero" set:html={codeBlock(d.install, "bash", `Install ${d.title}`)} />
+      <div class="hero__ctas">
+        <a class="btn btn--primary btn--lg" href={d.repo}><Icon name="github" size={18} /> View on GitHub</a>
+        {d.homepage && <a class="btn btn--glass btn--lg" href={d.homepage}>Documentation</a>}
+      </div>
+      {caveat && <p class="note"><Icon name="info" size={16} /><span>{caveat}</span></p>}
+    </div>
+
+    <div class="stage" data-stage>
+      <div class="stage__tilt">
+        <div class="stage__art layer" data-depth="10">
+          <Picture dir={theme.images} name="hero" widths={[1200, 2400]} sizes="(min-width: 1024px) 60vw, 100vw" w={2400} h={1600} loading="eager" alt={heroAlt[slug] ?? ""} />
+        </div>
+        {slug === "rtok" && (
+          <>
+            <div class="layer pos-a" data-depth="40" aria-hidden="true">
+              <div class="chip glass glass--thick delta-pill float">
+                <span class="delta-pill__sym">Δ</span>
+                <span><strong>Δtok <span class="delta-pill__num">−7 / 16</span></strong><small>illustration · every saving is a ledger row</small></span>
+              </div>
+            </div>
+            <div class="layer pos-b" data-depth="56" aria-hidden="true">
+              <div class="chip glass glass--thick float float--slow">
+                <ul class="legend"><li><i class="k"></i>kept</li><li><i class="t"></i>thinned</li><li><i class="c"></i>cut · <code>rtok expand &lt;id&gt;</code></li></ul>
+              </div>
+            </div>
+          </>
+        )}
+        {slug === "cox" && (
+          <div class="layer pos-b" data-depth="48">
+            <div class="chip glass glass--thick status-card float">
+              <div class="status-row"><span>Status</span><span style="display:inline-flex;align-items:center;gap:8px"><span class="status-led" aria-hidden="true"></span><b>Active development</b></span></div>
+              <div class="status-row"><span>APIs</span><b>Not yet stable</b></div>
+              <div class="status-row"><span>Release</span><b>v{d.version}</b></div>
+              <div class="status-row"><span>Surfaces</span><b>TUI · headless · ACP · MCP</b></div>
+            </div>
+          </div>
+        )}
+        {slug === "ketch" && (
+          <div class="layer pos-c" data-depth="48" aria-hidden="true">
+            <div class="chip glass glass--thick term-chip float">
+              <span><span class="dim">$</span> ketch install BurntSushi/ripgrep</span>
+              <span class="ok">✓ SHA-256 verified · linked onto PATH</span>
+              <span><span class="dim">$</span> <span class="caret"></span></span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE: animated terminal (real README commands) + product visual -->
+  <section class="section section--tight container" id="demo" aria-labelledby="demo-title">
+    <header class="section__head">
+      <p class="eyebrow">See it run</p>
+      <h2 id="demo-title" class="h2">{d.title}, in the terminal.</h2>
+    </header>
+    {slug === "rtok" ? (
+      <div class="showcase">
+        <Terminal demo={demo} id={`${slug}-term`} />
+        <CodeGraph />
+      </div>
+    ) : slug === "cox" ? (
+      <div class="showcase showcase--stack">
+        <CoxScenes scenes={COX_SCENES} />
+        {flow && <FlowViz flow={flow} />}
+      </div>
+    ) : slug === "ketch" && flow ? (
+      <div class="showcase showcase--stack">
+        <Terminal demo={demo} id={`${slug}-term`} />
+        <KetchRoute flow={flow} />
+      </div>
+    ) : (
+      <div class:list={["showcase", { "showcase--stack": flow }]}>
+        <Terminal demo={demo} id={`${slug}-term`} />
+        {flow && <FlowViz flow={flow} />}
+      </div>
+    )}
+  </section>
+
+  {slug === "rtok" && (
+    <section class="section section--tight container" aria-labelledby="ctx-title">
+      <header class="section__head">
+        <p class="eyebrow">Reversible by design</p>
+        <h2 id="ctx-title" class="h2">Less context in. Nothing lost.</h2>
+      </header>
+      <TokenParticles />
+    </section>
+  )}
+
+  <section class="section section--tight container" aria-labelledby="ov-title">
+    <header class="section__head">
+      <p class="eyebrow">Overview</p>
+      <h2 id="ov-title" class="h2">What {d.title} does.</h2>
+    </header>
+    <div class="prose" set:html={overview} />
+  </section>
+
+  <section class="section container" aria-labelledby="feat-title">
+    <header class="section__head">
+      <p class="eyebrow">Features</p>
+      <h2 id="feat-title" class="h2">Built for real workflows.</h2>
+    </header>
+    <ul class="grid grid--3" role="list">
+      {features.map((f, i) => (
+        <li class="card glass shine card--lift feature">
+          <span class="icon" aria-hidden="true"><Icon name={icons[i % icons.length]} /></span>
+          <h3 class="h3">{f.name}</h3>
+          <p set:html={f.html} />
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section container" id="install" aria-labelledby="inst-title">
+    <header class="section__head">
+      <p class="eyebrow">Install</p>
+      <h2 id="inst-title" class="h2">Up and running in a minute.</h2>
+    </header>
+    <div class="install-grid">
+      <div class="card glass install-card">
+        <h3 class="h3">Install</h3>
+        <div class="prose" set:html={installHtml} />
+      </div>
+      <div class="card glass install-card">
+        <h3 class="h3">Usage</h3>
+        {usage.slice(0, 1).map((g) => (<><p set:html={g.caption} /><Fragment set:html={codeBlock(g.code, g.lang, g.caption.replace(/<[^>]+>/g, "") || "Example")} /></>))}
+        <p class="muted small">More examples below.</p>
+      </div>
+    </div>
+  </section>
+
+  {usage.length > 1 && (
+    <section class="section section--tight container" aria-labelledby="use-title">
+      <header class="section__head">
+        <p class="eyebrow">Usage examples</p>
+        <h2 id="use-title" class="h2">Real commands, straight from the docs.</h2>
+      </header>
+      <div class="usage">
+        {usage.slice(1).map((g) => (
+          <div class="card glass">
+            <p set:html={g.caption} />
+            <Fragment set:html={codeBlock(g.code, g.lang, g.caption.replace(/<[^>]+>/g, "") || "Example")} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section container" aria-labelledby="links-title">
+    <header class="section__head">
+      <p class="eyebrow">Links</p>
+      <h2 id="links-title" class="h2">Go deeper.</h2>
+    </header>
+    <ul class="links" role="list">
+      {links.map((l) => (<li><a class="glass shine" href={l.href} rel="noopener">{l.label}<span aria-hidden="true">↗</span></a></li>))}
+    </ul>
+    <div class="license card glass">
+      <h3 class="h3">License</h3>
+      <p class="muted small">You can use {d.title} under any of the following licenses, at your choice:</p>
+      <ol>{LICENSE.items.map((l) => <li><span><strong>{l.name}</strong> — {l.text}</span></li>)}</ol>
+    </div>
+  </section>
+
+  <!-- PRICING: Free/OSS (real) + Pro (PLACEHOLDER) -->
+  <section class="section section--tight container" id="pricing" aria-labelledby="pr-title">
+    <header class="section__head">
+      <div class="section-flag"><p class="eyebrow">Pricing</p><span class="badge badge--placeholder">Pro is a placeholder</span></div>
+      <h2 id="pr-title" class="h2">Free forever. Pro when you need it.</h2>
+    </header>
+    <div class="grid grid--2 pricing-pair">
+      <article class="card glass tier" aria-labelledby="t-free">
+        <div class="tier__head"><h3 id="t-free" class="h3">Free · open source</h3><span class="badge badge--line">{LICENSE.short}</span></div>
+        <p class="price"><span class="price__num">$0</span><span class="muted small">forever</span></p>
+        <ul class="checklist">{(FREE_HIGHLIGHTS[slug] ?? ["The full open-source tool"]).map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
+        <a class="btn btn--glass btn--block" href="#install">Install free</a>
+      </article>
+      <article class="card glass tier tier--featured" aria-labelledby="t-pro">
+        <div class="tier__head"><h3 id="t-pro" class="h3">{d.title} Pro</h3><span class="badge badge--placeholder">Placeholder</span></div>
+        <p class="price"><span class="price__num">{pro.price}</span><span class="muted small">per seat</span></p>
+        <ul class="checklist">{pro.features.map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
+        <a class="btn btn--primary btn--block" href="#pricing" aria-describedby="t-pro-note">Join the Pro waitlist</a>
+        <p id="t-pro-note" class="muted small">Placeholder — checkout is not wired up in this MVP.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="container" aria-labelledby="cta-title">
+    <div class="cta cta--prop glass glass--thick">
+      <Picture class="cta__prop" dir={theme.images} name="prop" widths={[400, 800]} sizes="360px" w={800} h={800} />
+      <div class="cta__copy">
+        <h2 id="cta-title" class="h2">Try {d.title} today.</h2>
+        <p class="muted">Free and open source. Star it, file an issue, or send a pull request.</p>
+      </div>
+      <div class="cta__actions">
+        <a class="btn btn--primary btn--lg" href={d.repo}><Icon name="github" size={18} /> github.com/listepo/{d.title}</a>
+      </div>
+    </div>
+  </section>
+</Base>

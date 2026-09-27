@@ -1,55 +1,55 @@
-# landing
+# listepo tools — AI developer tool storefront
 
-A small, dependency-light landing page that demonstrates the **"3D aesthetics"** web design trend popularised by sites like Linear, Vercel and Arc: depth, glassmorphism, soft layered shadows, floating layers with subtle parallax / mouse tilt, and an animated gradient-mesh background — plus a tiny real-time WebGL object.
+A marketplace landing for AI developer tools, built with [Astro](https://astro.build) and deployed to
+GitHub Pages. The home page is the storefront (catalog, featured tool, how it works, per-tool pricing,
+FAQ); every product gets its own showcase page generated from one Markdown file.
 
-The content is a fictional dev-tool product called **Lumen** (generic hero, features, how-it-works, pricing, CTA). It is a design demo, not a real product.
+Live: https://listepo.github.io/landing/ — pages `/landing/rtok/`, `/landing/cox/`, `/landing/ketch/`.
 
-## Stack
-- [Vite](https://vite.dev) 8 + vanilla **TypeScript** (no framework)
-- [OGL](https://github.com/oframe/ogl) — minimal WebGL library for the hero torus (lazy-loaded)
-- Everything else is plain modern CSS
-
-## Techniques used
-| Technique | Where |
-|---|---|
-| Animated gradient mesh via `@property`-registered percentages driving `radial-gradient` positions, blurred + grain overlay | `.bg__mesh`, `.bg__grain` in `src/style.css` |
-| Glassmorphism: translucent gradient fill, 1px light border, inset top highlight, `backdrop-filter: blur() saturate()` with an opaque fallback | `.glass` |
-| Layered soft shadows (3–4 stacked shadows per elevation) + colored glows | `--shadow-sm/md/lg`, `--glow` |
-| Floating layers: `@property --float` keyframes composed with a perspective tilt in one `transform` | `.float-card` |
-| Mouse tilt (`--rx/--ry`) and lerped mouse parallax using the individual `translate` property | `initTilt`, `initParallax` in `src/main.ts` |
-| Cursor spotlight + animated conic-gradient border ring (mask-composite) on cards | `.card::before/::after` |
-| Scroll-driven reveal with `animation-timeline: view()` (progressive enhancement, `@supports`) | `.reveal` |
-| View Transitions API for the pricing toggle (instant fallback) | `initBillingToggle` |
-| Small WebGL torus with fresnel/iridescent shader, paused offscreen, DPR-capped, CSS-orb fallback | `src/hero3d.ts` |
-| Fluid display typography, tight tracking, gradient text, `text-wrap: balance` | `.display`, `.h2`, `.gradient-text` |
-
-### Accessibility & performance
-- `prefers-reduced-motion: reduce` stops all CSS animation/transitions; JS disables tilt/parallax and the WebGL loop renders a single static frame.
-- Pointer effects only on fine pointers with hover (not on touch).
-- Text tokens: `#f4f4f8` (~18.3:1) and `#a9abc2` (~8.9:1) on `#07070c`.
-- Skip link, semantic landmarks, visible `:focus-visible` outlines, decorative layers `aria-hidden`.
-- The WebGL chunk is code-split and loaded on idle; the main JS bundle is ~2 KB gzip.
+> The previous site in this repository is preserved in branch and tag `archive/toha-landing-2026-09-27`.
 
 ## Run
-Requires Node 20+ (tested with Node 26 via mise) and pnpm (npm works too).
 
-```bash
-pnpm install     # or: npm install
-pnpm dev         # dev server at http://localhost:5173
-pnpm build       # type-check (tsc --noEmit) + production build to dist/
-pnpm preview     # serve the production build
+```sh
+npm i
+npm run dev       # http://localhost:4321/landing/
+npm run build     # static site in dist/
+npm run preview   # serve dist
 ```
 
-## Project layout
-```
-index.html               markup for all sections
-src/main.ts              tilt, parallax, spotlight, view-transition toggle, lazy WebGL
-src/hero3d.ts            OGL torus + shaders
-src/style.css            tokens and all visual techniques
-public/favicon.svg
-AGENTS.md                guide for AI agents
-.agents/skills/*.md      reusable skill docs (glass, mesh, shadows, motion, palette, type, WebGL)
-```
+`astro.config.mjs` reads `SITE_URL` (default `https://listepo.github.io`) and `SITE_BASE` (default
+`/landing/`). Every internal link and asset goes through `u()` in `src/lib/site.ts`, so moving the site is a
+one-line change. `.github/workflows/pages.yml` builds and deploys on every push to `main`.
 
-## Agent skills
-`.agents/skills/` contains one Markdown playbook per technique (with YAML frontmatter `name` / `description`), each with when-to-use guidance, copy-pasteable snippets taken from this page, a before/after example, do/don't lists and performance/accessibility notes. `AGENTS.md` indexes them.
+## Structure
+
+- `content/projects/*.md` — one file per product (frontmatter + README-derived sections). See
+  [`CONTENT_CONTRACT.md`](CONTENT_CONTRACT.md). Adding a file adds the product to the catalog, the
+  Products menu, the footer, pricing and a new `/<slug>/` page.
+- `src/pages/index.astro` — storefront; `src/pages/[slug].astro` — product showcase template.
+- `src/components/` — `Terminal` (animated demo of real README commands), `TokenBitset` (rtok),
+  `Flow` (cox event stream, ketch install/rollback), `Picture`, `Icon`.
+- `src/data/showcase.ts` — terminal scripts and flow steps; `src/lib/site.ts` — brand, themes, license,
+  caveats, Pro placeholders; `src/lib/catalog.ts` — collection helpers.
+- `src/styles/global.css` — the design system; `src/scripts/main.ts` — progressive enhancement.
+- `art/` — scripts that draw the 11 images in `public/images/` (4 hero, 3 props, 4 OG cards) as SVG,
+  render them with headless Chrome and encode AVIF/WebP/JPEG with sharp.
+
+## Design system
+
+Dark-first depth: near-black blue-tinted background, CSS gradient mesh from each page accent
+(`color-mix`/`oklch`, grain, faint grid, slow drift, scroll-driven parallax where `animation-timeline` is
+supported), glass surfaces (hairline + top highlight + bottom edge, blur tiers 2/10/36px), three-level
+shadow stacks, cursor-follow shine, two-ring focus. Per page accents: home `#4C8DFF`/`#3EE6C4`, rtok
+`#5CE1FF`/`#FF6B4A` on navy `#06101A`, cox `#A8E06C`, ketch `#3DDCB0`.
+
+Accessibility: AA contrast, skip link, 44px targets, keyboard hotspots and menu (Esc closes), content
+visible without JS, opaque fallbacks for `prefers-reduced-transparency` and missing `backdrop-filter`,
+`prefers-reduced-motion` stops drift, float, tilt, typing and parallax.
+
+## Placeholders
+
+All Pro tiers, Pro prices, Pro features and the waitlist buttons are **placeholders** and are labelled on
+the page. Product facts (features, install commands, versions, terminal commands) come only from each
+tool's own README / site copy. Licensing for every tool: GNU GPLv3, a royalty-free license, or a
+commercial license — your choice.

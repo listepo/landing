@@ -1,0 +1,12 @@
+---
+// AVIF + WebP picture for generated art in public/images/<dir>/<name>-<w>.{avif,webp}.
+import { u } from "../lib/site";
+interface Props { dir: string; name: string; widths: number[]; sizes: string; alt?: string; class?: string; loading?: "eager" | "lazy"; w: number; h: number }
+const { dir, name, widths, sizes, alt = "", class: cls, loading = "lazy", w, h } = Astro.props;
+const set = (ext: string) => widths.map((x) => `${u(`/images/${dir}/${name}-${x}.${ext}`)} ${x}w`).join(", ");
+const largest = widths[widths.length - 1];
+---
+<picture class={cls} aria-hidden={alt ? undefined : "true"}>
+  <source type="image/avif" srcset={set("avif")} sizes={sizes} />
+  <img src={u(`/images/${dir}/${name}-${largest}.webp`)} srcset={set("webp")} sizes={sizes} alt={alt} width={w} height={h} loading={loading} decoding="async" fetchpriority={loading === "eager" ? "high" : undefined} />
+</picture>

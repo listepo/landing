@@ -1,0 +1,41 @@
+---
+// ketch: the route GitHub release → checksum → install → lockfile → rollback as an SVG.
+// A glass "package" chip travels the route on offset-path while the stroke draws with scroll;
+// the rollback leg runs back to install (reverse). Static end state without JS / reduced motion.
+// Below 760px the vertical step list (Flow) is shown instead.
+import FlowViz from "./Flow.astro";
+import type { Flow } from "../data/showcase";
+interface Props { flow: Flow }
+const { flow } = Astro.props;
+const D = "M80 150 H800 C 910 150, 910 300, 790 300 H 650 C 570 300, 560 230, 560 150";
+const stops = [
+  { id: "release", x: 80, y: 150, label: "GitHub release", text: "The asset built for your machine — no formula, no tap.", pos: "up" },
+  { id: "checksum", x: 320, y: 150, label: "Checksum", text: "Published SHA-256 checked against what landed on disk.", pos: "down" },
+  { id: "install", x: 560, y: 150, label: "Install", text: "Unpacked into a versioned store under ~/.ketch, linked onto your PATH.", pos: "up" },
+  { id: "lockfile", x: 800, y: 150, label: "Lockfile", text: "ketch lock writes ketch.lock; ketch sync installs exactly those versions elsewhere.", pos: "up" },
+  { id: "rollback", x: 720, y: 300, label: "Rollback", text: "ketch rollback <pkg> relinks the previous version, no re-download.", pos: "down", back: true },
+];
+---
+<div class="route-wrap">
+  <div class="route glass" data-route>
+    <p class="flow__title">{flow.title}</p>
+    <div class="route__fit" data-route-fit>
+      <div class="route__box" data-route-box style={`--route:path('${D}')`}>
+        <svg class="route__svg" viewBox="0 0 1000 360" width="1000" height="360" aria-hidden="true">
+          <path class="route__track" d={D} />
+          <path class="route__draw" d={D} pathLength="1" data-route-path />
+          <path class="route__back" d="M800 150 C 910 150, 910 300, 790 300 H 650 C 570 300, 560 230, 560 150" />
+          {stops.map((s) => <circle class:list={["route__stop", { "route__stop--back": s.back }]} cx={s.x} cy={s.y} r="9" />)}
+        </svg>
+        {stops.map((s) => (
+          <div class:list={["route__tip glass glass--thick", `route__tip--${s.pos}`, { "route__tip--back": s.back }]} style={`left:${s.x}px;top:${s.y}px`} data-route-stop={s.id}>
+            <strong>{s.label}</strong><span>{s.text}</span>
+          </div>
+        ))}
+        <div class="route__chip glass glass--thick" data-route-chip aria-hidden="true"><span class="route__chip-dot"></span>sharkdp/fd <small>v10.2.0</small></div>
+      </div>
+    </div>
+    <p class="muted small">Scroll to follow one package through install, lock and rollback. Steps and commands are from the ketch README; <code>sharkdp/fd@v10.2.0</code> is its install example.</p>
+  </div>
+  <div class="route-fallback"><FlowViz flow={flow} /></div>
+</div>

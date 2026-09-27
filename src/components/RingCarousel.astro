@@ -1,0 +1,52 @@
+---
+// Home hero: 3D ring carousel of product cards (faux-3D, CSS preserve-3d).
+// Cards are real links; one glass hotspot per card opens a real feature from that tool's README.
+// No JS / <768px: a plain grid. Reduced motion: no auto-rotate, instant turns.
+import Icon from "./Icon.astro";
+import Picture from "./Picture.astro";
+import { u } from "../lib/site";
+import { proFor } from "../lib/catalog";
+import type { CollectionEntry } from "astro:content";
+interface Hotspot { tool: string; label: string; text: string }
+interface Props { tools: CollectionEntry<"projects">[]; hotspots: Hotspot[] }
+const { tools, hotspots } = Astro.props;
+const n = tools.length;
+---
+<div class="ring" data-ring style={`--n:${n}`} aria-roledescription="carousel" aria-label="Products">
+  <div class="ring__stage" data-ring-stage>
+    <ul class="ring__track" data-ring-track data-hotspots>
+      {tools.map((t, i) => {
+        const hs = hotspots.find((h) => h.tool === t.id);
+        return (
+          <li class="ring__item" style={`--i:${i};--card-accent:${t.data.accent}`} data-ring-item aria-roledescription="slide" aria-label={`${i + 1} of ${n}: ${t.data.title}`}>
+            <div class="ring__face">
+              <a class="ring__card glass glass--thick" href={u(`/${t.id}/`)} draggable="false">
+                <Picture class="ring__art" dir={t.id} name="prop" widths={[400]} sizes="240px" w={400} h={400} loading="eager" />
+                <span class="ring__meta"><span class="badge badge--version" style={`--accent:${t.data.accent}`}>v{t.data.version}</span></span>
+                <strong class="ring__title">{t.data.title}<span>.</span></strong>
+                <span class="ring__tag">{t.data.tagline}</span>
+                <span class="ring__foot"><span>Free · Pro {proFor(t).price}*</span><Icon name="arrow" size={16} /></span>
+              </a>
+              {hs && (
+                <div class="hotspot ring__hs">
+                  <button class="hotspot__dot" type="button" aria-expanded="false" aria-controls={`hs-${t.id}`} style={`--card-accent:${t.data.accent}`}>
+                    <span class="sr-only">{hs.label}: show a feature</span>
+                  </button>
+                  <div class="hotspot__tip glass glass--thick" id={`hs-${t.id}`} role="note" hidden style={`--card-accent:${t.data.accent}`}>
+                    <p class="hotspot__kicker">{hs.label}</p>
+                    <p>{hs.text}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+  <div class="ring__controls" data-ring-controls hidden>
+    <button class="ring__btn" type="button" data-ring-prev aria-label="Previous product"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <p class="ring__status" aria-live="polite" data-ring-status>{tools[0].data.title} · 1 / {n}</p>
+    <button class="ring__btn" type="button" data-ring-next aria-label="Next product"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+</div>

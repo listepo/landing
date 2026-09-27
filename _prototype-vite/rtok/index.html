@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>rtok — measured context reduction for AI coding agents</title>
+  <meta name="description" content="rtok reduces the context that AI coding agents must carry: one Rust binary with Claude Code hooks, an MCP server and an API proxy.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<!-- Source of truth: README.md of github.com/listepo/rtok. Do not add facts, stats or benchmarks that are not in the README. -->
+<body class="project project--rtok">
+  <!--@include nav-->
+
+  <main id="main" tabindex="-1">
+    <section class="p-hero container" aria-labelledby="p-title">
+      <div class="p-hero__copy">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/#open-source">Open source</a><span aria-hidden="true">/</span><span aria-current="page">rtok</span></nav>
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Rust · hooks · MCP · proxy</p>
+        <h1 id="p-title" class="p-hero__title">rtok<span>.</span></h1>
+        <p class="lead">rtok reduces the context that AI coding agents must carry. One Rust binary with three surfaces — Claude Code hooks, an MCP server and an API proxy. Each reduction is measured, and shortened payloads stay retrievable by id.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href="https://github.com/listepo/rtok"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg> View on GitHub</a>
+          <a class="btn btn--ghost btn--lg" href="#install">Install</a>
+        </div>
+      </div>
+      <div class="terminal glass" aria-label="Example terminal session" role="img">
+        <div class="terminal__bar" aria-hidden="true"><i></i><i></i><i></i><span>rtok agents install claude --dry-run</span></div>
+        <pre class="code"><code><span class="p">$ </span>rtok agents install claude --dry-run
++ PreToolUse Bash rtok hook PreToolUse
++ PreToolUse Read rtok hook PreToolUse
++ PostToolUse * rtok hook PostToolUse
++ UserPromptSubmit rtok hook UserPromptSubmit
++ SessionStart rtok hook SessionStart
++ PreCompact rtok hook PreCompact
++ PostCompact rtok hook PostCompact
++ SessionEnd rtok hook SessionEnd
+8 additions</code></pre>
+      </div>
+    </section>
+
+    <section class="section container" aria-labelledby="features-title">
+      <header class="section__head">
+        <p class="kicker">Why rtok</p>
+        <h2 id="features-title" class="h2">Ten methods, one process, one ledger.</h2>
+      </header>
+      <ul class="grid grid--features" role="list">
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="m12 3 9 5-9 5-9-5 9-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m3 13 9 5 9-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Three surfaces, one binary</h3>
+          <p class="muted">Claude Code hooks, an MCP server and an API proxy ship in a single Rust binary.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 19V11m5.3 8V6m5.4 13v-5M20 19V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Measured, not claimed</h3>
+          <p class="muted">A saving that is not a row in the ledger does not exist — including rtok’s own. Provider-reported usage is ground truth.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M9 7 4 12l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12h10a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" transform="translate(0 -6)"/></svg></span>
+          <h3 class="h3">Lossless by design</h3>
+          <p class="muted">Archive and proxy reductions keep the original: <code class="inline-code">rtok expand &lt;id&gt;</code> retrieves the full payload, a line range or grep matches.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Fails open</h3>
+          <p class="muted">Hooks that hit an error return the unmodified input and exit successfully.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.3 7 15.6 7.6M7 8.3l2.2 7.3M16.6 10.1 11.8 16" stroke="currentColor" stroke-width="1.6"/></svg></span>
+          <h3 class="h3">Code graph over MCP</h3>
+          <p class="muted"><code class="inline-code">rtok graph index .</code> builds a symbol index the agent queries as symbol, callers, impact, outline and explore.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M9 3v5m6-5v5M6 8h12v3a6 6 0 0 1-12 0V8Zm6 9v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Plugins &amp; OpenTelemetry</h3>
+          <p class="muted">measure, cmd, read, archive, proxy, inject, guard, memory, graph and toon — each can be toggled; calls export to Jaeger, Grafana, SigNoz or Maple.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section container" id="install" aria-labelledby="install-title">
+      <header class="section__head">
+        <p class="kicker">Get started</p>
+        <h2 id="install-title" class="h2">Install, then wire up Claude Code.</h2>
+      </header>
+      <div class="p-steps">
+        <div class="card glass p-step">
+          <h3 class="h3">Installer script</h3>
+          <p class="muted">macOS (Apple silicon or Intel) and Linux x86-64. Puts <code class="inline-code">rtok</code> in <code class="inline-code">~/.cargo/bin</code>.</p>
+          <pre class="code"><code><span class="p">$ </span>curl --proto &#x27;=https&#x27; --tlsv1.2 -LsSf https://github.com/listepo/rtok/releases/latest/download/rtok-installer.sh | sh</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Or with ketch, Homebrew, npm or PyPI</h3>
+          
+          <pre class="code"><code><span class="p">$ </span>ketch install listepo/rtok
+<span class="p">$ </span>brew install listepo/tap/rtok
+<span class="p">$ </span>npm i -g rtok-cli
+<span class="p">$ </span>uv tool install rtok-cli</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Start with Claude Code</h3>
+          <p class="muted">Installs rtok’s eight hooks and MCP entry. Settings are backed up first; <code class="inline-code">--dry-run</code> touches nothing.</p>
+          <pre class="code"><code><span class="p">$ </span>rtok agents install claude --dry-run
+<span class="p">$ </span>rtok agents install claude
+<span class="p">$ </span>rtok doctor</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Run a command without paying for its output</h3>
+          <p class="muted">Output is archived to <code class="inline-code">~/.rtok/archive/&lt;id&gt;</code>; the original is one command away.</p>
+          <pre class="code"><code><span class="p">$ </span>rtok run -- cargo test
+[rtok 7f3a91 · 412 lines · expand: rtok expand 7f3a91]
+<span class="p">$ </span>rtok expand 7f3a91 --grep &quot;panicked&quot;</code></pre>
+        </div>
+      </div>
+      <p class="p-note" style="margin-top:var(--s-6)">Honest status from the README: estimates are a chars-per-token heuristic until matched with provider usage, and no live A/B cost reduction has been established yet.</p>
+    </section>
+
+    <section class="section container" aria-labelledby="usage-title">
+      <header class="section__head">
+        <p class="kicker">Reference</p>
+        <h2 id="usage-title" class="h2">Core commands.</h2>
+      </header>
+      <div class="table-wrap glass">
+        <table class="table">
+          <thead><tr><th scope="col">Command</th><th scope="col">Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline-code">rtok agents install claude</code></td><td class="muted">install Claude Code hooks and MCP registration (--dry-run)</td></tr>
+<tr><td><code class="inline-code">rtok mcp</code></td><td class="muted">serve read, memory, graph and expansion tools over stdio</td></tr>
+<tr><td><code class="inline-code">rtok proxy</code></td><td class="muted">capture API usage; optionally archive older tool results</td></tr>
+<tr><td><code class="inline-code">rtok run -- &lt;cmd&gt;</code></td><td class="muted">run, archive and format a command result</td></tr>
+<tr><td><code class="inline-code">rtok expand &lt;id&gt;</code></td><td class="muted">retrieve an archived original (--lines, --grep)</td></tr>
+<tr><td><code class="inline-code">rtok stats</code></td><td class="muted">report transcript and proxy measurements</td></tr>
+<tr><td><code class="inline-code">rtok doctor</code></td><td class="muted">inspect hooks, MCP servers and the proxy chain</td></tr>
+<tr><td><code class="inline-code">rtok plugins</code></td><td class="muted">list plugins: id, enabled, surfaces</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="container" aria-labelledby="cta-title">
+      <div class="cta glass">
+        <div>
+          <h2 id="cta-title" class="h2">Measure what your agent actually carries.</h2>
+          <p class="muted">Dual/triple licensed: GNU GPLv3, a royalty-free license for proprietary desktop, mobile and web apps (with attribution), or a commercial license.</p>
+        </div>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="https://github.com/listepo/rtok"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg> github.com/listepo/rtok</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!--@include footer-->
+</body>
+</html>

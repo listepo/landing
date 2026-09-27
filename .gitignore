@@ -1,5 +1,9 @@
-node_modules
-dist
+node_modules/
+dist/
+.astro/
 .DS_Store
-*.log
-.vite
+_prototype-vite/node_modules/
+_prototype-vite/dist/
+.scaffold-import.tgz
+.transfer/
+.agents/

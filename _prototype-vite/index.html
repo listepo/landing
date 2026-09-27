@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tempo Dial — The focus timer you can feel</title>
+  <meta name="description" content="Tempo Dial is a tactile desk focus timer with a haptic aluminum dial, ambient light ring and zero apps required.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0a0f17">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <!--@include nav-->
+
+  <main id="main" tabindex="-1">
+    <!-- HERO -->
+    <section class="hero container" aria-labelledby="hero-title">
+      <div class="hero__copy">
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Now shipping batch 02 · Ships in 2 weeks</p>
+        <h1 id="hero-title" class="display">Deep work,<br><span class="text-gradient">one turn away.</span></h1>
+        <p class="lead">Tempo Dial is a weighted aluminum focus timer for your desk. Twist to set a session, feel the haptic click, and let the soft light ring keep time — no app, no notifications, no noise.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href="#pricing">
+            Pre-order — $149
+            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn--ghost btn--lg" href="#features">See how it works</a>
+        </div>
+        <ul class="hero__meta" aria-label="Purchase guarantees">
+          <li><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Free shipping</li>
+          <li><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>60-day returns</li>
+          <li><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>2-year warranty</li>
+        </ul>
+      </div>
+
+      <!-- Layered 3D-ish product visual, built entirely from CSS + inline SVG -->
+      <div class="hero__visual" aria-hidden="true" data-parallax-root>
+        <div class="stage">
+          <div class="layer layer--halo" data-depth="0.2"></div>
+          <div class="layer layer--plate glass" data-depth="0.35"></div>
+          <div class="layer layer--device" data-depth="0.6">
+            <div class="device">
+              <div class="device__shadow"></div>
+              <div class="device__body">
+                <div class="device__ring"></div>
+                <div class="device__knob">
+                  <svg class="device__ticks" viewBox="0 0 200 200">
+                    <defs>
+                      <linearGradient id="arc" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#5eead4"/>
+                        <stop offset="1" stop-color="#60a5fa"/>
+                      </linearGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="84" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="84" fill="none" stroke="url(#arc)" stroke-width="6" stroke-linecap="round" stroke-dasharray="370 528" transform="rotate(-90 100 100)"/>
+                  </svg>
+                  <div class="device__readout">
+                    <span class="device__time">25:00</span>
+                    <span class="device__label">Focus</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="layer layer--chip layer--chip-a glass" data-depth="0.9">
+            <span class="chip__icon chip__icon--teal"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 2v6l4 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            <span><strong>4 sessions</strong><small>today · 1h 40m</small></span>
+          </div>
+          <div class="layer layer--chip layer--chip-b glass" data-depth="1.1">
+            <span class="chip__icon chip__icon--amber"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1.5 9.8 6H14l-3.4 2.6 1.3 4.4L8 10.4 4.1 13l1.3-4.4L2 6h4.2z" fill="currentColor"/></svg></span>
+            <span><strong>Do not disturb</strong><small>Slack &amp; phone muted</small></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section container" id="features" aria-labelledby="features-title">
+      <header class="section__head">
+        <p class="kicker">Why Tempo</p>
+        <h2 id="features-title" class="h2">Built to disappear into your flow.</h2>
+        <p class="muted">Every detail is designed to remove friction between you and focused work.</p>
+      </header>
+      <ul class="grid grid--features" role="list">
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 12V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Haptic dial</h3>
+          <p class="muted">A precision-machined aluminum ring with 60 soft detents. One minute per click.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10 1.4 1.4m0-12.8-1.4 1.4m-10 10-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <h3 class="h3">Ambient light ring</h3>
+          <p class="muted">Time shown as a calm glow in your peripheral vision. No ticking, no screen glare.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 4l16 16M9.5 5.2A7 7 0 0 1 19 12a7 7 0 0 1-1 3.6M6 7.6A7 7 0 0 0 16.4 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Auto do-not-disturb</h3>
+          <p class="muted">Optional Bluetooth link mutes Slack, calendar and phone for the length of a session.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="7" width="16" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M21 10.5v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6 10h7v4H6z" fill="currentColor"/></svg></span>
+          <h3 class="h3">Weeks per charge</h3>
+          <p class="muted">Up to 6 weeks of daily sessions on a single USB-C charge.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 19V11m5.3 8V6m5.4 13v-5M20 19V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Private by default</h3>
+          <p class="muted">Session history stays on the device. Export a CSV only if you want to.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3c3 3.5 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.5 9 6.5 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Made to last</h3>
+          <p class="muted">Recycled aluminum, replaceable battery and a repair guide in the box.</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- SOCIAL PROOF
+         PLACEHOLDER: all logos, names, quotes and numbers in this section are
+         fictional sample data for the MVP. Replace with real, verified proof before launch. -->
+    <section class="section container" id="proof" aria-labelledby="proof-title">
+      <header class="section__head">
+        <p class="kicker">Loved at the desk <span class="badge badge--placeholder">Placeholder</span></p>
+        <h2 id="proof-title" class="h2">Teams that protect their focus.</h2>
+        <p class="muted">Sample social proof for layout purposes only — not real customers.</p>
+      </header>
+
+      <ul class="logos" role="list" aria-label="Placeholder customer logos">
+        <li>Northwind</li>
+        <li>Halcyon</li>
+        <li>Parallel&nbsp;Co</li>
+        <li>Fieldnote</li>
+        <li>Kitestring</li>
+        <li>Obsidian&nbsp;Labs</li>
+      </ul>
+
+      <div class="stats" role="list">
+        <div class="stat glass" role="listitem"><span class="stat__num">38%</span><span class="muted">more deep-work hours*</span></div>
+        <div class="stat glass" role="listitem"><span class="stat__num">12k+</span><span class="muted">desks worldwide*</span></div>
+        <div class="stat glass" role="listitem"><span class="stat__num">4.9/5</span><span class="muted">average rating*</span></div>
+      </div>
+
+      <ul class="grid grid--quotes" role="list">
+        <li>
+          <figure class="card glass quote">
+            <blockquote><p>“I stopped reaching for my phone to start a timer. That alone gave me back an hour a day.”</p></blockquote>
+            <figcaption><span class="avatar" aria-hidden="true">AM</span><span><strong>Alex Morgan</strong><small class="muted">Staff Engineer, Northwind</small></span></figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="card glass quote">
+            <blockquote><p>“The light ring is genius. I know where I am in a session without ever looking at a clock.”</p></blockquote>
+            <figcaption><span class="avatar avatar--b" aria-hidden="true">SR</span><span><strong>Sam Rivera</strong><small class="muted">Designer, Halcyon</small></span></figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure class="card glass quote">
+            <blockquote><p>“We bought one for every desk. Meetings got shorter because focus blocks became visible.”</p></blockquote>
+            <figcaption><span class="avatar avatar--c" aria-hidden="true">JK</span><span><strong>Jordan Kim</strong><small class="muted">Head of Ops, Fieldnote</small></span></figcaption>
+          </figure>
+        </li>
+      </ul>
+      <p class="footnote muted">* Placeholder figures. Not based on real data.</p>
+    </section>
+
+    <!-- PRICING (prices are sample values — PLACEHOLDER) -->
+    <section class="section container" id="pricing" aria-labelledby="pricing-title">
+      <header class="section__head">
+        <p class="kicker">Pricing</p>
+        <h2 id="pricing-title" class="h2">Pick your setup.</h2>
+        <p class="muted">One-time purchase. No subscription required, ever.</p>
+      </header>
+      <div class="grid grid--pricing">
+        <article class="tier card glass" aria-labelledby="tier-solo">
+          <h3 id="tier-solo" class="h3">Solo</h3>
+          <p class="muted">The dial, nothing else.</p>
+          <p class="price"><span class="price__num">$149</span><span class="muted">one-time</span></p>
+          <ul class="checklist">
+            <li>Tempo Dial (Graphite)</li>
+            <li>USB-C cable</li>
+            <li>2-year warranty</li>
+          </ul>
+          <a class="btn btn--ghost btn--block" href="#">Choose Solo</a>
+        </article>
+
+        <article class="tier tier--featured card glass" aria-labelledby="tier-studio">
+          <span class="badge badge--accent">Most popular</span>
+          <h3 id="tier-studio" class="h3">Studio</h3>
+          <p class="muted">Everything for a focused desk.</p>
+          <p class="price"><span class="price__num">$199</span><span class="muted">one-time</span></p>
+          <ul class="checklist">
+            <li>Tempo Dial in any finish</li>
+            <li>Walnut charging base</li>
+            <li>Auto do-not-disturb link</li>
+            <li>3-year warranty</li>
+          </ul>
+          <a class="btn btn--primary btn--block" href="#">Choose Studio</a>
+        </article>
+
+        <article class="tier card glass" aria-labelledby="tier-team">
+          <h3 id="tier-team" class="h3">Team</h3>
+          <p class="muted">For 5 desks or more.</p>
+          <p class="price"><span class="price__num">$169</span><span class="muted">per desk</span></p>
+          <ul class="checklist">
+            <li>Everything in Studio</li>
+            <li>Custom engraving</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn btn--ghost btn--block" href="#">Contact sales</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- OPEN SOURCE — real projects; every fact below is taken from each repo's README -->
+    <section class="section container" id="open-source" aria-labelledby="oss-title">
+      <header class="section__head">
+        <p class="kicker">Open source</p>
+        <h2 id="oss-title" class="h2">Tools we build in the open.</h2>
+        <p class="muted">Three Rust projects by listepo, each with its own page: install, usage and what it does.</p>
+      </header>
+      <ul class="grid grid--oss" role="list">
+        <li class="card glass oss-card oss-card--rtok">
+          <div class="oss-card__top">
+            <span class="oss-card__mark" aria-hidden="true">rt</span>
+            <span class="badge badge--line">Rust · CLI</span>
+          </div>
+          <h3 class="oss-card__title">rtok</h3>
+          <p class="muted">Reduces the context AI coding agents must carry. One Rust binary with three surfaces: Claude Code hooks, an MCP server and an API proxy — every reduction measured and retrievable by id.</p>
+          <pre class="code"><span class="p">$ </span>rtok run -- cargo test</pre>
+          <a class="oss-card__link" href="/rtok/">Explore rtok <span aria-hidden="true">→</span></a>
+        </li>
+        <li class="card glass oss-card oss-card--cox">
+          <div class="oss-card__top">
+            <span class="oss-card__mark" aria-hidden="true">cx</span>
+            <span class="badge badge--line">Rust · Agent</span>
+          </div>
+          <h3 class="oss-card__title">cox</h3>
+          <p class="muted">A modular terminal coding agent. One agent core with an interactive TUI, headless automation, editor integration through ACP and MCP tools for other agents.</p>
+          <pre class="code"><span class="p">$ </span>cox run -p "create hello.txt containing hi"</pre>
+          <a class="oss-card__link" href="/cox/">Explore cox <span aria-hidden="true">→</span></a>
+        </li>
+        <li class="card glass oss-card oss-card--ketch">
+          <div class="oss-card__top">
+            <span class="oss-card__mark" aria-hidden="true">k</span>
+            <span class="badge badge--line">Rust · Installer</span>
+          </div>
+          <h3 class="oss-card__title">ketch</h3>
+          <p class="muted">Catch releases straight from GitHub. Installs CLI tools and apps from GitHub releases on macOS, Linux and Windows — verified and put on your PATH.</p>
+          <pre class="code"><span class="p">$ </span>ketch install BurntSushi/ripgrep</pre>
+          <a class="oss-card__link" href="/ketch/">Explore ketch <span aria-hidden="true">→</span></a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section container container--narrow" id="faq" aria-labelledby="faq-title">
+      <header class="section__head">
+        <p class="kicker">FAQ</p>
+        <h2 id="faq-title" class="h2">Questions, answered.</h2>
+      </header>
+      <div class="faq">
+        <details class="faq__item glass">
+          <summary>Do I need an app to use Tempo Dial?</summary>
+          <p class="muted">No. Twist to set, press to start. The optional companion app only adds do-not-disturb sync and history export.</p>
+        </details>
+        <details class="faq__item glass">
+          <summary>How long does the battery last?</summary>
+          <p class="muted">Around six weeks with four sessions a day. It charges fully in about 90 minutes over USB-C.</p>
+        </details>
+        <details class="faq__item glass">
+          <summary>Does it make any sound?</summary>
+          <p class="muted">By default it is silent and uses light plus a gentle haptic pulse. A soft chime can be enabled.</p>
+        </details>
+        <details class="faq__item glass">
+          <summary>What if it is not for me?</summary>
+          <p class="muted">Send it back within 60 days for a full refund. We cover return shipping.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="container" aria-labelledby="cta-title">
+      <div class="cta glass">
+        <div>
+          <h2 id="cta-title" class="h2">Give your best hours a shape.</h2>
+          <p class="muted">Batch 02 is limited. Reserve yours today — pay nothing until it ships.</p>
+        </div>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="#pricing">Pre-order now</a>
+          <a class="btn btn--ghost btn--lg" href="#faq">Read the FAQ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!--@include footer-->
+</body>
+</html>

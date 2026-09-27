@@ -1,0 +1,24 @@
+---
+// rtok: canvas-2D token particles. Scrolling down squeezes them into a narrow "context" band
+// (thinned tokens shrink, cut tokens peel off in coral to the archive); scrolling back expands them
+// again — the archive is lossless. Every number here is illustrative, and labelled so.
+---
+<div class="particles glass glass--thick" data-particles>
+  <div class="particles__head">
+    <div>
+      <p class="flow__title">Context, compressed <span class="badge badge--placeholder">Illustrative</span></p>
+      <p class="particles__counter" aria-live="off"><span class="bitset__delta">Δtok</span> <span data-p-count>−0</span> <span class="muted">/ <span data-p-total>240</span> tokens</span></p>
+    </div>
+    <ul class="legend legend--row">
+      <li><span class="swatch swatch--k" aria-hidden="true"></span> kept</li>
+      <li><span class="swatch swatch--t" aria-hidden="true"></span> thinned</li>
+      <li><span class="swatch swatch--c" aria-hidden="true"></span> cut → archive</li>
+    </ul>
+  </div>
+  <div class="particles__stage">
+    <canvas data-p-canvas aria-hidden="true"></canvas>
+    <span class="particles__band-label" aria-hidden="true">context</span>
+    <span class="particles__archive-label" aria-hidden="true">archive · <code>rtok expand &lt;id&gt;</code></span>
+  </div>
+  <p class="muted small">Scroll to compress, scroll back to expand. An illustration of the idea, not a measurement: in rtok a saving only counts when a Measurement row in the ledger records it, and archived payloads come back whole with <code>rtok expand &lt;id&gt;</code>.</p>
+</div>

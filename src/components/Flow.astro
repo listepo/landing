@@ -1,0 +1,17 @@
+---
+import type { Flow } from "../data/showcase";
+interface Props { flow: Flow }
+const { flow } = Astro.props;
+---
+<div class="flow">
+  <h3 class="h3 flow__title">{flow.title}</h3>
+  <ol class="flow__nodes">
+    {flow.nodes.map((n, i) => (
+      <li class="flow__node glass shine" style={`--i:${i}`}>
+        <span class="flow__idx" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+        <strong>{n.label}</strong>
+        <span class="muted small">{n.detail}</span>
+      </li>
+    ))}
+  </ol>
+</div>

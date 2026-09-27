@@ -3,18 +3,16 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "A small landing page demonstrating the 3D-aesthetics web trend: depth, glassmorphism, layered shadows, floating layers and animated gradient meshes.",
+  "description": "listepo tools — a storefront for AI developer tools (rtok, cox, ketch), built with Astro for GitHub Pages.",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview --port 4321",
+    "check": "astro check"
   },
   "dependencies": {
-    "ogl": "^1.0.11"
-  },
-  "devDependencies": {
-    "typescript": "~5.9.3",
-    "vite": "^8.3.1"
+    "astro": "^5.18.2",
+    "marked": "^16.0.0",
+    "@fontsource-variable/inter": "^5.2.0"
   }
 }

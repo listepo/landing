@@ -1,0 +1,39 @@
+---
+// rtok: the MCP code graph as an SVG. Edges draw in with stroke-dashoffset when scrolled into view
+// (drawn statically without JS / under reduced motion). Tool names are the ones the README lists.
+const tools = [
+  { id: "symbol", x: 330, y: 50 },
+  { id: "callers", x: 455, y: 120 },
+  { id: "impact", x: 420, y: 280 },
+  { id: "outline", x: 245, y: 280 },
+  { id: "explore", x: 205, y: 90 },
+];
+const hub = { x: 330, y: 172 };
+const agent = { x: 70, y: 172 };
+---
+<figure class="graph glass" data-graph aria-labelledby="graph-cap">
+  <p class="flow__title">Code graph over MCP</p>
+  <svg class="graph__svg" viewBox="0 0 520 330" role="img" aria-label="An agent queries rtok's symbol index through five MCP tools: symbol, callers, impact, outline and explore.">
+    <defs>
+      <radialGradient id="g-hub" cx="50%" cy="30%" r="70%"><stop offset="0" stop-color="#bff4ff" /><stop offset="1" stop-color="#5CE1FF" stop-opacity=".35" /></radialGradient>
+    </defs>
+    <path class="graph__edge graph__edge--agent" pathLength="1" d={`M${agent.x + 44} ${agent.y} C ${agent.x + 120} ${agent.y - 40}, ${hub.x - 120} ${hub.y - 40}, ${hub.x - 36} ${hub.y}`} style="--d:0" />
+    {tools.map((t, i) => <path class="graph__edge" pathLength="1" d={`M${hub.x} ${hub.y} L${t.x} ${t.y}`} style={`--d:${0.35 + i * 0.12}`} />)}
+    <g class="graph__node graph__node--agent" style="--d:0">
+      <rect x={agent.x - 48} y={agent.y - 20} width="96" height="40" rx="12" />
+      <text x={agent.x} y={agent.y + 5}>agent</text>
+    </g>
+    <g class="graph__node graph__node--hub" style="--d:.2">
+      <circle cx={hub.x} cy={hub.y} r="36" fill="url(#g-hub)" />
+      <text x={hub.x} y={hub.y - 2}>symbol</text>
+      <text x={hub.x} y={hub.y + 13}>index</text>
+    </g>
+    {tools.map((t, i) => (
+      <g class="graph__node" style={`--d:${0.5 + i * 0.12}`}>
+        <rect x={t.x - 44} y={t.y - 17} width="88" height="34" rx="17" />
+        <text x={t.x} y={t.y + 5}>{t.id}</text>
+      </g>
+    ))}
+  </svg>
+  <figcaption id="graph-cap" class="muted small"><code>rtok graph index .</code> builds a symbol index that agents query as <code>symbol</code>, <code>callers</code>, <code>impact</code>, <code>outline</code> and <code>explore</code> instead of a grep-and-read chain.</figcaption>
+</figure>

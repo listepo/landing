@@ -1,0 +1,27 @@
+---
+// Animated console demo. Server-rendered in its final state (works without JS and under
+// reduced motion); JS types it out once when scrolled into view, with Pause / Replay.
+import type { Demo } from "../data/showcase";
+interface Props { demo: Demo; id: string; class?: string; manual?: boolean }
+const { demo, id, class: cls, manual } = Astro.props;
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const lines: string[] = [];
+for (const s of demo.steps) {
+  lines.push(`<span class="term__line term__line--cmd"><span class="tok-p">$ </span><span class="term__typed">${esc(s.cmd)}</span></span>`);
+  if (s.note) lines.push(`<span class="term__line term__line--note">${esc(s.note)}</span>`);
+  for (const o of s.out ?? []) lines.push(`<span class="term__line term__line--out">${esc(o)}</span>`);
+}
+lines.push(`<span class="term__line term__line--cmd term__line--idle"><span class="tok-p">$ </span><span class="term__cursor"></span></span>`);
+const html = lines.join("\n");
+const transcript = demo.steps.map((s) => [`$ ${s.cmd}`, s.note, ...(s.out ?? [])].filter(Boolean).join("\n")).join("\n");
+---
+<figure class:list={["term glass glass--thick", cls]} data-term data-term-manual={manual ? "" : undefined} aria-labelledby={`${id}-cap`}>
+  <div class="term__bar">
+    <span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="term__title">{demo.title}</span>
+    <button class="term__ctl" type="button" data-term-ctl hidden>Replay</button>
+  </div>
+  <pre class="term__body" aria-hidden="true"><code set:html={html} /></pre>
+  <pre class="sr-only">{transcript}</pre>
+  <figcaption id={`${id}-cap`} class="term__cap">{demo.caption}</figcaption>
+</figure>

@@ -1,0 +1,225 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Picture from "../components/Picture.astro";
+import Terminal from "../components/Terminal.astro";
+import RingCarousel from "../components/RingCarousel.astro";
+import { u, BRAND, LICENSE, THEMES, FREE_HIGHLIGHTS } from "../lib/site";
+import { getTools, featuredTool, proFor, cardInstall } from "../lib/catalog";
+import { parseFeatures, splitSections } from "../lib/sections";
+import { DEMOS, demoFromUsage } from "../data/showcase";
+import { parseUsage } from "../lib/sections";
+
+const tools = await getTools();
+const featured = featuredTool(tools);
+const fSections = splitSections(featured.body ?? "");
+const firstSentence = (html: string) => { const m = html.match(/^(.*?[.!?])(\s|$)/); return m ? m[1] : html; };
+const fFeatures = parseFeatures(fSections["features"]).slice(0, 3).map((f) => ({ ...f, html: firstSentence(f.html) }));
+const fDemo = DEMOS[featured.id] ?? demoFromUsage(featured.data.title, parseUsage(fSections["usage examples"] ?? fSections["usage"]).map((g) => ({ code: g.code })));
+const minPro = tools.map((t) => proFor(t).price).sort((a, b) => parseFloat(a.replace(/[^\d.]/g, "")) - parseFloat(b.replace(/[^\d.]/g, "")))[0];
+const glyph: Record<string, string> = { rtok: "Δ", cox: "◎", ketch: "↓" };
+
+/* Hero hotspots — real features, taken from each project's synced site copy. Positions are % of the art layer. */
+const hotspots = [
+  { x: 60, y: 34, tool: "cox", label: "cox · TUI and editors", accent: THEMES.cox.accent, href: "/cox/", text: "Terminal UI with streaming replies, approval prompts and a diff view; cox acp serves Zed and JetBrains." },
+  { x: 80, y: 58, tool: "rtok", label: "rtok · code graph", accent: THEMES.rtok.accent, href: "/rtok/", text: "Code graph over MCP: agents query symbol, callers, impact, outline and explore instead of grep-and-read." },
+  { x: 35, y: 64, tool: "ketch", label: "ketch · verified installs", accent: THEMES.ketch.accent, href: "/ketch/", text: "Installs from any repo that ships releases and checks the published SHA-256 sums against what landed on disk." },
+];
+---
+<Base title={`${BRAND} — a marketplace of AI developer tools`} description="A curated catalog of AI developer tools. Every tool has a free open-source edition; add Pro per tool." theme="home">
+  <!-- HERO -->
+  <section class="hero container" aria-labelledby="hero-title" data-audience="oss">
+    <div class="hero__copy">
+      <div class="section-flag"><p class="pill"><span class="pill__dot" aria-hidden="true"></span> Marketplace · {tools.length} tools · all open source</p></div>
+      <h1 id="hero-title" class="display">Tools for agentic coding.<br /><span class="gradient-text">Free to start.</span></h1>
+      <p class="lead">A curated catalog of AI developer tools — each one a fast, local binary with a free open-source edition. Add Pro to the tools your team relies on.</p>
+      <div class="hero__ctas">
+        <a class="btn btn--primary btn--lg" href={u("/#catalog")}>Browse the catalog <Icon name="arrow" size={18} /></a>
+        <a class="btn btn--glass btn--lg" href={u("/#pricing")}>How pricing works</a>
+      </div>
+      <ul class="hero__note">
+        <li><Icon name="check" size={16} /> Free editions · {LICENSE.short}</li>
+        <li><Icon name="check" size={16} /> Pro per tool <span class="badge badge--placeholder">Placeholder</span></li>
+      </ul>
+    </div>
+
+    <div class="stage stage--ring" data-stage>
+      <div class="stage__tilt">
+        <div class="stage__art layer" data-depth="10">
+          <Picture dir="home" name="hero" widths={[1200, 2400]} sizes="(min-width: 1024px) 60vw, 100vw" w={2400} h={1600} loading="eager" />
+        </div>
+        <div class="stage__ring layer" data-depth="0">
+          <RingCarousel tools={tools} hotspots={hotspots} />
+        </div>
+        <div class="layer pos-a" data-depth="34">
+          <div class="chip glass glass--thick toggle-chip float">
+            <span class="toggle-chip__label" id="aud-label">Pricing model</span>
+            <div class="segmented" role="group" aria-labelledby="aud-label">
+              <button type="button" data-set-audience="oss" aria-pressed="true">Free</button>
+              <button type="button" data-set-audience="pro" aria-pressed="false">Pro</button>
+            </div>
+            <div class="toggle-chip__body" aria-live="polite">
+              <span class="for-oss"><strong>$0 · every tool</strong>open-source editions</span>
+              <span class="for-pro"><strong>from {minPro}*</strong>per tool · placeholder pricing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCT -->
+  <section class="section container" id="featured" aria-labelledby="feat-title">
+    <div class="featured glass glass--thick" style={`--card-accent:${featured.data.accent};--accent:${featured.data.accent}`}>
+      <div class="featured__copy">
+        <div class="section-flag"><p class="eyebrow">Featured tool</p><span class="badge badge--version">v{featured.data.version}</span></div>
+        <h2 id="feat-title" class="featured__title">{featured.data.title}<span>.</span></h2>
+        <p class="lead">{featured.data.tagline}</p>
+        <ul class="featured__list">
+          {fFeatures.map((f) => <li><Icon name="check" size={16} /><span><strong>{f.name}.</strong> <span set:html={f.html} /></span></li>)}
+        </ul>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href={u(`/${featured.id}/`)}>Explore {featured.data.title} <Icon name="arrow" size={18} /></a>
+          <a class="btn btn--glass btn--lg" href={featured.data.repo}><Icon name="github" size={18} /> Source</a>
+        </div>
+      </div>
+      <div class="featured__demo">
+        <Picture class="featured__prop" dir={featured.id} name="prop" widths={[400, 800]} sizes="320px" w={800} h={800} />
+        <Terminal demo={fDemo} id="featured-term" />
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG — generated from content/projects/*.md; new files appear here automatically -->
+  <section class="section container" id="catalog" aria-labelledby="cat-title">
+    <header class="section__head">
+      <p class="eyebrow">Catalog</p>
+      <h2 id="cat-title" class="h2">Every tool, free to start.</h2>
+      <p class="lead">Each tool is a standalone binary with its own page, demo and install command.</p>
+    </header>
+    <ul class="grid grid--3" role="list">
+      {tools.map((p) => (
+        <li class="card glass shine card--lift oss-card" style={`--card-accent:${p.data.accent}`}>
+          <span class="oss-card__mesh" aria-hidden="true"></span>
+          <Picture class="oss-card__preview" dir={p.id} name="hero" widths={[1200]} sizes="420px" w={2400} h={1600} />
+          <div class="oss-card__top">
+            <span class="icon" aria-hidden="true">{glyph[p.id] ?? p.data.title.slice(0, 1)}</span>
+            <span class="badge badge--version" style={`--accent:${p.data.accent}`}>v{p.data.version}</span>
+          </div>
+          <h3 class="oss-card__title">{p.data.title}<span>.</span></h3>
+          <p>{p.data.tagline}</p>
+          <pre class="code" aria-label={`Install ${p.data.title}`}><code><span class="tok-p" aria-hidden="true">$ </span>{cardInstall(p)}</code></pre>
+          <p class="price-chips"><span class="price-chip">Free · OSS</span><span class="price-chip price-chip--pro">Pro {proFor(p).price}*</span></p>
+          <a class="oss-card__link" href={u(`/${p.id}/`)}>Explore {p.data.title} <Icon name="arrow" size={16} /></a>
+        </li>
+      ))}
+      <li class="card soon-card" aria-label="More tools coming">
+        <span class="icon" aria-hidden="true"><Icon name="sparkle" /></span>
+        <h3 class="h3">More tools coming</h3>
+        <p>New tools join the catalog by adding one Markdown file — see the content contract.</p>
+      </li>
+    </ul>
+    <p class="footnote">* Pro prices are placeholders.</p>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section container" id="how" aria-labelledby="how-title">
+    <header class="section__head">
+      <p class="eyebrow">How it works</p>
+      <h2 id="how-title" class="h2">Pick. Install. Grow.</h2>
+    </header>
+    <ol class="steps">
+      <li class="card glass step"><span class="step__n" aria-hidden="true">01</span><h3 class="h3">Pick a tool</h3><p>Browse the catalog; every product page shows a live terminal demo and the exact install command.</p></li>
+      <li class="card glass step"><span class="step__n" aria-hidden="true">02</span><h3 class="h3">Install the free edition</h3><p>One command — installer script, ketch, Homebrew or your package manager. The open-source edition is the full tool.</p></li>
+      <li class="card glass step"><span class="step__n" aria-hidden="true">03</span><h3 class="h3">Add Pro per tool</h3><p>Only for the tools your team relies on, on top of the same binary. <span class="badge badge--placeholder">Placeholder</span></p></li>
+    </ol>
+  </section>
+
+  <!-- WHY THESE TOOLS — facts common to every tool in the catalog -->
+  <section class="section container" aria-labelledby="why-title">
+    <header class="section__head">
+      <p class="eyebrow">Why these tools</p>
+      <h2 id="why-title" class="h2">Small, local, accountable.</h2>
+    </header>
+    <ul class="grid grid--4" role="list">
+      <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="box" /></span><h3 class="h3">One binary each</h3><p>Written in Rust and shipped as a single native binary for macOS and Linux.</p></li>
+      <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="tree" /></span><h3 class="h3">Local first</h3><p>Ledgers, archives and installs live on your machine; export telemetry only if you choose.</p></li>
+      <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="chart" /></span><h3 class="h3">Measured and verified</h3><p>rtok records every saving, cox records every request’s cost, ketch checks every checksum.</p></li>
+      <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="lock" /></span><h3 class="h3">Same licensing</h3><p>{LICENSE.short}, for every tool in the catalog.</p></li>
+    </ul>
+  </section>
+
+  <!-- PRICING — per product: Free/OSS (real) + Pro (PLACEHOLDER) -->
+  <section class="section container" id="pricing" aria-labelledby="pricing-title">
+    <header class="section__head section__head--center">
+      <div class="section-flag"><p class="eyebrow">Pricing</p><span class="badge badge--placeholder">Pro is a placeholder</span></div>
+      <h2 id="pricing-title" class="h2">Free forever. Pro, per tool.</h2>
+      <p class="lead">Every tool has a free open-source edition. Pro tiers below are illustrative placeholders for this MVP.</p>
+    </header>
+    <div class="grid grid--3">
+      {tools.map((p) => (
+        <article class="card glass price-card" style={`--card-accent:${p.data.accent}`} aria-labelledby={`pr-${p.id}`}>
+          <h3 id={`pr-${p.id}`} class="oss-card__title">{p.data.title}<span>.</span></h3>
+          <div class="price-tier">
+            <div class="tier__head"><strong>Free · OSS</strong><span class="price__num price__num--sm">$0</span></div>
+            <ul class="checklist">{(FREE_HIGHLIGHTS[p.id] ?? ["The full open-source tool"]).map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
+            <a class="btn btn--glass btn--block" href={u(`/${p.id}/#install`)}>Install free</a>
+          </div>
+          <div class="price-tier price-tier--pro">
+            <div class="tier__head"><strong>Pro <span class="badge badge--placeholder">Placeholder</span></strong><span class="price__num price__num--sm">{proFor(p).price}</span></div>
+            <ul class="checklist">{proFor(p).features.map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
+            <a class="btn btn--primary btn--block" href={u(`/${p.id}/#pricing`)} style={`--accent:${p.data.accent}`}>Join the Pro waitlist</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="footnote">Placeholder links — checkout is not wired up in this MVP.</p>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section container container--narrow" id="faq" aria-labelledby="faq-title">
+    <header class="section__head">
+      <p class="eyebrow">FAQ</p>
+      <h2 id="faq-title" class="h2">Questions, answered.</h2>
+    </header>
+    <div class="faq">
+      <details class="faq__item glass">
+        <summary>What is free, and what would I pay for?</summary>
+        <div class="faq__body"><p>Every tool’s open-source edition is free — the full binary, no feature gates. Pro tiers (placeholder) would add team features on top, priced per tool.</p></div>
+      </details>
+      <details class="faq__item glass">
+        <summary>How are the tools licensed?</summary>
+        <div class="faq__body">
+          <p>All tools in the catalog use the same licensing. You can use each one under any of the following, at your choice:</p>
+          <ol class="license">{LICENSE.items.map((l) => <li><span><strong>{l.name}</strong> — {l.text}</span></li>)}</ol>
+        </div>
+      </details>
+      <details class="faq__item glass">
+        <summary>What data leaves my machine?</summary>
+        <div class="faq__body"><p>The open-source tools run locally and keep their ledgers on disk; rtok and cox export telemetry only if you point them at an OTLP endpoint. Pro data handling terms are a placeholder and will be published before any launch.</p></div>
+      </details>
+      <details class="faq__item glass">
+        <summary>Can I self-host?</summary>
+        <div class="faq__body"><p>The free editions are local binaries — there is nothing to host. A self-hosted Pro option is a placeholder in this MVP.</p></div>
+      </details>
+      <details class="faq__item glass">
+        <summary>How do I upgrade a tool to Pro?</summary>
+        <div class="faq__body"><p>Keep your existing install; Pro (placeholder) is designed to connect on top of the same binary, one tool at a time.</p></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="container" aria-labelledby="cta-title">
+    <div class="cta glass glass--thick">
+      <div class="cta__copy">
+        <h2 id="cta-title" class="h2">Find your next tool.</h2>
+        <p class="muted">Install one binary in under a minute. No account needed.</p>
+      </div>
+      <div class="cta__actions">
+        <a class="btn btn--primary btn--lg" href={u("/#catalog")}>Browse the catalog</a>
+        <a class="btn btn--glass btn--lg" href={u(`/${featured.id}/`)}>See {featured.data.title}</a>
+      </div>
+    </div>
+  </section>
+</Base>

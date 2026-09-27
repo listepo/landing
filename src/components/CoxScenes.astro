@@ -1,0 +1,26 @@
+---
+// cox: three glass panels in perspective — TUI, headless (`cox run -p`) and editor (`cox acp`).
+// The active panel moves forward (translateZ); tabs or ←/→ switch; each panel types real README usage.
+// No JS: the three panels simply stack.
+import Terminal from "./Terminal.astro";
+import type { Demo } from "../data/showcase";
+interface Scene { id: string; label: string; sub: string; demo: Demo }
+interface Props { scenes: Scene[] }
+const { scenes } = Astro.props;
+---
+<div class="scenes" data-scenes>
+  <div class="scenes__tabs" role="tablist" aria-label="Ways to run cox">
+    {scenes.map((s, i) => (
+      <button class="scenes__tab" type="button" role="tab" id={`sc-tab-${s.id}`} aria-controls={`sc-${s.id}`} aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? 0 : -1}>
+        <strong>{s.label}</strong><small>{s.sub}</small>
+      </button>
+    ))}
+  </div>
+  <div class="scenes__stage">
+    {scenes.map((s, i) => (
+      <div class="scenes__panel" role="tabpanel" id={`sc-${s.id}`} aria-labelledby={`sc-tab-${s.id}`} style={`--i:${i}`} data-scene>
+        <Terminal demo={s.demo} id={`sc-term-${s.id}`} manual />
+      </div>
+    ))}
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ketch — catch releases straight from GitHub</title>
+  <meta name="description" content="ketch installs command-line tools and apps from GitHub releases on macOS, Linux and Windows — verified and put on your PATH.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="/src/styles.css">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<!-- Source of truth: README.md of github.com/listepo/ketch. Do not add facts, stats or benchmarks that are not in the README. -->
+<body class="project project--ketch">
+  <!--@include nav-->
+
+  <main id="main" tabindex="-1">
+    <section class="p-hero container" aria-labelledby="p-title">
+      <div class="p-hero__copy">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/#open-source">Open source</a><span aria-hidden="true">/</span><span aria-current="page">ketch</span></nav>
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span> macOS · Linux · Windows</p>
+        <h1 id="p-title" class="p-hero__title">ketch<span>.</span></h1>
+        <p class="lead">Catch releases straight from GitHub. Install command-line tools and apps from GitHub releases — no taps, no formulae, no build step. ketch downloads what a project already ships, verifies it, and puts it on your PATH.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--primary btn--lg" href="https://github.com/listepo/ketch"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg> View on GitHub</a>
+          <a class="btn btn--ghost btn--lg" href="#install">Install</a>
+          <a class="btn btn--ghost btn--lg" href="https://listepo.github.io/ketch/docs/">Documentation</a>
+        </div>
+      </div>
+      <div class="terminal glass" aria-label="Example terminal session" role="img">
+        <div class="terminal__bar" aria-hidden="true"><i></i><i></i><i></i><span>ketch install</span></div>
+        <pre class="code"><code><span class="p">$ </span>ketch install BurntSushi/ripgrep  # any repo that publishes releases
+<span class="p">$ </span>ketch install rg  # or a name ketch already knows
+<span class="p">$ </span>ketch install sharkdp/fd@v10.2.0  # or an exact version
+<span class="p">$ </span>ketch install --path ./mytool  # a local binary, archive, symlink, or .app</code></pre>
+      </div>
+    </section>
+
+    <section class="section container" aria-labelledby="features-title">
+      <header class="section__head">
+        <p class="kicker">Why ketch</p>
+        <h2 id="features-title" class="h2">The artefact is already there.</h2>
+      </header>
+      <ul class="grid grid--features" role="list">
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Any repo that ships releases</h3>
+          <p class="muted">No formula, no tap, no waiting for a maintainer. Point it at <code class="inline-code">owner/repo</code>.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">Verified, not just downloaded</h3>
+          <p class="muted">Published SHA-256 sums are checked against what landed on disk; <code class="inline-code">require_checksums</code> refuses anything that publishes none.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 12h6M12 9v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Apps as well as binaries</h3>
+          <p class="muted">An <code class="inline-code">.app</code> bundle goes to /Applications, quarantine cleared when the signature checks out, removed cleanly on uninstall.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 6h6l2 2h8v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <h3 class="h3">One tree</h3>
+          <p class="muted">Everything under <code class="inline-code">~/.ketch</code>. Uninstalling leaves nothing behind.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <h3 class="h3">Rollback &amp; history</h3>
+          <p class="muted">Upgrades keep the previous version; <code class="inline-code">ketch rollback</code> relinks it without re-downloading, and <code class="inline-code">ketch history</code> remembers what you had.</p>
+        </li>
+        <li class="card glass">
+          <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="5" y="10" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+          <h3 class="h3">Reproduce a machine</h3>
+          <p class="muted"><code class="inline-code">ketch lock</code> writes ketch.lock; <code class="inline-code">ketch sync</code> makes a new machine match it.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section container" id="install" aria-labelledby="install-title">
+      <header class="section__head">
+        <p class="kicker">Get started</p>
+        <h2 id="install-title" class="h2">Install ketch, then catch anything.</h2>
+      </header>
+      <div class="p-steps">
+        <div class="card glass p-step">
+          <h3 class="h3">macOS &amp; Linux</h3>
+          
+          <pre class="code"><code><span class="p">$ </span>curl -fsSL https://raw.githubusercontent.com/listepo/ketch/main/install.sh | bash</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Windows</h3>
+          
+          <pre class="code"><code><span class="p">$ </span>irm https://raw.githubusercontent.com/listepo/ketch/main/install.ps1 | iex</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Homebrew or mise</h3>
+          
+          <pre class="code"><code><span class="p">$ </span>brew install --cask listepo/tap/ketch
+<span class="p">$ </span>mise use -g github:listepo/ketch
+<span class="p">$ </span>ketch path install</code></pre>
+        </div>
+        <div class="card glass p-step">
+          <h3 class="h3">Everyday use</h3>
+          
+          <pre class="code"><code><span class="p">$ </span>ketch list  # what is installed
+<span class="p">$ </span>ketch outdated  # what has a newer release
+<span class="p">$ </span>ketch upgrade  # bring everything unpinned up to date
+<span class="p">$ </span>ketch doctor  # check the environment</code></pre>
+        </div>
+      </div>
+      <p class="p-note" style="margin-top:var(--s-6)">Make sure <code class="inline-code">~/.ketch/bin</code> is on your PATH — <code class="inline-code">ketch doctor</code> will tell you if it is not.</p>
+    </section>
+
+    <section class="section container" aria-labelledby="usage-title">
+      <header class="section__head">
+        <p class="kicker">Reference</p>
+        <h2 id="usage-title" class="h2">Commands you will use.</h2>
+      </header>
+      <div class="table-wrap glass">
+        <table class="table">
+          <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline-code">ketch install &lt;pkg&gt;...</code></td><td class="muted">install; concurrent by default, --jobs N to change</td></tr>
+<tr><td><code class="inline-code">ketch rollback &lt;pkg&gt;</code></td><td class="muted">restore the previous retained version</td></tr>
+<tr><td><code class="inline-code">ketch info &lt;pkg&gt;</code></td><td class="muted">details, including --assets and why each scored</td></tr>
+<tr><td><code class="inline-code">ketch search &lt;query&gt;</code></td><td class="muted">the registry and GitHub</td></tr>
+<tr><td><code class="inline-code">ketch changelog &lt;pkg&gt;</code></td><td class="muted">what changed: the shipped file, or the release notes</td></tr>
+<tr><td><code class="inline-code">ketch pin / unpin &lt;pkg&gt;</code></td><td class="muted">hold a version, or let go</td></tr>
+<tr><td><code class="inline-code">ketch lock / sync</code></td><td class="muted">write ketch.lock, or install what it names</td></tr>
+<tr><td><code class="inline-code">ketch self upgrade</code></td><td class="muted">upgrade ketch itself</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="container" aria-labelledby="cta-title">
+      <div class="cta glass">
+        <div>
+          <h2 id="cta-title" class="h2">No taps. No formulae. Just releases.</h2>
+          <p class="muted">MIT licensed. Package registry at listepo/ketch-registry.</p>
+        </div>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="https://github.com/listepo/ketch"><svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.88.31-1.59.83-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg> github.com/listepo/ketch</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!--@include footer-->
+</body>
+</html>
