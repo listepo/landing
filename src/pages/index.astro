@@ -121,7 +121,7 @@ const hotspots = [
           </div>
           <h3 class="oss-card__title">{p.data.title}<span>.</span></h3>
           <p>{p.data.tagline}</p>
-          <pre class="code" aria-label={`Install ${p.data.title}`}><code><span class="tok-p" aria-hidden="true">$ </span>{cardInstall(p)}</code></pre>
+          <pre class="code" role="group" aria-label={`Install ${p.data.title}`}><code><span class="tok-p" aria-hidden="true">$ </span>{cardInstall(p)}</code></pre>
           <p class="price-chips"><span class="price-chip">Free · OSS</span><span class="price-chip price-chip--pro">Pro {proFor(p).price}*</span></p>
           <a class="oss-card__link" href={u(`/${p.id}/`)}>Explore {p.data.title} <Icon name="arrow" size={16} /></a>
         </li>

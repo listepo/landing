@@ -13,7 +13,7 @@ export function codeBlock(text: string, lang = "bash", label = "command"): strin
     return lang === "text" ? body : `<span class="tok-p" aria-hidden="true">$ </span>${body}`;
   });
   return `<div class="codeblock">
-  <pre class="code" tabindex="0" aria-label="${esc(label)}"><code data-lang="${esc(lang)}">${lines.join("\n")}</code></pre>
+  <pre class="code" tabindex="0" role="group" aria-label="${esc(label)}"><code data-lang="${esc(lang)}">${lines.join("\n")}</code></pre>
   <button class="copy" type="button" data-copy="${esc(text.replace(/\n$/, ""))}" hidden>
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 10.5V4a1.5 1.5 0 0 1 1.5-1.5H10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     <span class="copy__label">Copy</span><span class="sr-only"> ${esc(label)}</span>

@@ -90,7 +90,7 @@ export function docCodeBlock(text: string, lang = ""): string {
   });
   const label = lang ? `${lang} code` : "code";
   return `<div class="codeblock codeblock--doc"${lang ? ` data-lang="${esc(lang)}"` : ""}>
-  <pre class="code" tabindex="0" aria-label="${esc(label)}"><code>${lines.join("\n")}</code></pre>
+  <pre class="code" tabindex="0" role="group" aria-label="${esc(label)}"><code>${lines.join("\n")}</code></pre>
   <button class="copy" type="button" data-copy="${esc(text.replace(/\n$/, ""))}" hidden>
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 10.5V4a1.5 1.5 0 0 1 1.5-1.5H10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     <span class="copy__label">Copy</span><span class="sr-only"> ${esc(label)}</span>
@@ -194,6 +194,15 @@ function renderDoc(
   const rest = h1 ? body.replace(h1[0], "") : body;
   const slugger = makeSlugger();
   const toc: TocEntry[] = [];
+  // Scrollable tables are named regions; name each after the section it sits in, and keep the
+  // names unique on the page (screen readers list regions by name).
+  let section = title;
+  const tableNames = new Map<string, number>();
+  const tableName = () => {
+    const n = (tableNames.get(section) ?? 0) + 1;
+    tableNames.set(section, n);
+    return n > 1 ? `${section} table ${n}` : `${section} table`;
+  };
 
   const resolveHref = (raw: string): string => {
     const href = safeHref(raw);
@@ -218,6 +227,7 @@ function renderDoc(
         const id = slugger(text.replace(/`/g, ""));
         const d = Math.min(Math.max(depth, 2), 6);
         if (d === 2 || d === 3) toc.push({ id, text: plain(text), depth: d as 2 | 3 });
+        section = plain(text);
         return `<h${d} id="${esc(id)}" class="doc-h"><a class="doc-anchor" href="#${esc(id)}" aria-label="Link to this section"></a>${inner}</h${d}>\n`;
       },
       code({ text, lang }: Tokens.Code) {
@@ -237,7 +247,7 @@ function renderDoc(
       table(token: Tokens.Table) {
         const head = token.header.map((c) => `<th${c.align ? ` style="text-align:${c.align}"` : ""}>${this.parser.parseInline(c.tokens)}</th>`).join("");
         const rows = token.rows.map((r) => `<tr>${r.map((c) => `<td${c.align ? ` style="text-align:${c.align}"` : ""}>${this.parser.parseInline(c.tokens)}</td>`).join("")}</tr>`).join("");
-        return `<div class="table-wrap" tabindex="0" role="region" aria-label="Table"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+        return `<div class="table-wrap" tabindex="0" role="region" aria-label="${esc(tableName())}"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
       },
       html({ text }: Tokens.HTML | Tokens.Tag) {
         return safeHtml(text);
