@@ -94,7 +94,9 @@ p { text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 code, pre, kbd { font-family: var(--font-mono); }
 :focus { outline: none; }
-:focus-visible { outline: none; box-shadow: var(--focus); border-radius: var(--r-xs); }
+/* The ring is a box-shadow; the transparent outline is what forced-colors mode (which drops
+   box-shadows) paints in the system colour, so keyboard focus stays visible there. */
+:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--focus); border-radius: var(--r-xs); }
 main:focus { box-shadow: none; }
 ::selection { background: color-mix(in oklch, var(--accent) 40%, transparent); color: var(--fg-strong); }
 
