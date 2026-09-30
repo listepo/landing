@@ -31,6 +31,8 @@ jobs:
       build-command: |
         export SITE_URL=https://pyrlyn.github.io SITE_BASE=/landing/
         npm run build
+        # Astro and TypeScript diagnostics
+        npm run check
         # docs coverage, headings and internal links
         npm run check:docs
         # SEO meta, headings, alt text, JSON-LD and sitemap
