@@ -46,7 +46,11 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
     <meta name="theme-color" content={t.bg} />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href={u("/favicon.svg")} type="image/svg+xml" />
+    <!-- Pyrlyn favicon (public/pyrlyn/); the previous public/favicon.svg stays in the repo, unlinked. -->
+    <link rel="icon" href={u("/pyrlyn/pyrlyn-favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={u("/pyrlyn/pyrlyn-favicon-32.png")} type="image/png" sizes="32x32" />
+    <link rel="icon" href={u("/pyrlyn/pyrlyn-favicon-64.png")} type="image/png" sizes="64x64" />
+    <link rel="apple-touch-icon" href={u("/pyrlyn/pyrlyn-apple-touch-icon.png")} />
     <link rel="sitemap" type="application/xml" href={u("/sitemap-index.xml")} />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content={ogType} />
@@ -84,6 +88,11 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
         <a class="brand tw:max-[459px]:pr-0!" href={u("/")} aria-label={`${BRAND} home`}>
           <span class="brand__mark" aria-hidden="true"></span>
           <span>listepo <span class="brand__sub tw:max-[459px]:hidden!">tools</span></span>
+        </a>
+        <a class="pyrlyn-by pyrlyn-by--nav" href="https://github.com/pyrlyn" aria-label="Pyrlyn">
+          <span class="pyrlyn-by__by tw:max-[459px]:hidden!" aria-hidden="true">by</span>
+          <img class="tw:max-[459px]:hidden!" src={u("/pyrlyn/pyrlyn-lockup-on-dark.svg")} alt="" width="69" height="20" />
+          <img class="tw:min-[460px]:hidden!" src={u("/pyrlyn/pyrlyn-mark-on-dark.svg")} alt="" width="28" height="28" />
         </a>
         <nav aria-label="Primary">
           <ul class="nav__links">
@@ -138,7 +147,13 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
 
     <footer class="footer container">
       <div class="footer__row">
-        <a class="brand" href={u("/")}><span class="brand__mark" aria-hidden="true"></span><span>listepo <span class="brand__sub">tools</span></span></a>
+        <div class="footer__brands">
+          <a class="brand" href={u("/")}><span class="brand__mark" aria-hidden="true"></span><span>listepo <span class="brand__sub">tools</span></span></a>
+          <a class="pyrlyn-by pyrlyn-by--footer" href="https://github.com/pyrlyn" aria-label="Pyrlyn">
+            <span class="pyrlyn-by__by" aria-hidden="true">by</span>
+            <img src={u("/pyrlyn/pyrlyn-lockup-on-dark.svg")} alt="" width="89" height="26" loading="lazy" />
+          </a>
+        </div>
         <nav aria-label="Footer">
           <ul class="footer__links">
             {tools.map((x) => <li><a href={u(`/${x.id}/`)}>{x.data.title}</a></li>)}
