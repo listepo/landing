@@ -321,6 +321,7 @@ main:focus { box-shadow: none; }
 .pyrlyn-by--footer img { height: 26px; }
 .footer__brands { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
 .nav__links { display: none; align-items: center; gap: 2px; margin-right: auto; }
+.nav__inner > nav { margin-right: auto; } /* the links sit in <nav>, so push the actions from there */
 .nav__links a {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--s-3); border-radius: var(--r-full);
   font-size: var(--fs-sm); font-weight: 500; color: var(--muted); transition: color .2s, background-color .2s;
