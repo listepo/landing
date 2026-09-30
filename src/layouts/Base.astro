@@ -36,7 +36,7 @@ const docTools = tools.filter((x) => withDocs.has(x.id));
 const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
 ---
 <!doctype html>
-<html lang="en" style={vars} data-theme={theme}>
+<html lang="en" style={vars} data-theme={theme} class={inDocs ? "is-still" : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

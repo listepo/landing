@@ -142,6 +142,11 @@ main:focus { box-shadow: none; }
 @keyframes drift-1 { to { transform: translate3d(6%, 5%, 0) scale(1.08); } }
 @keyframes drift-2 { to { transform: translate3d(-6%, 7%, 0) scale(.92); } }
 @keyframes drift-3 { to { transform: translate3d(5%, -6%, 0) scale(1.1); } }
+/* Idle cost: the drift and hero loops redraw every frame under many backdrop-filter layers.
+   Docs pages render with .is-still; other pages get it from JS while the hero is off screen.
+   The first play state pauses the drift, the second keeps the scroll-driven parallax. */
+.is-still .mesh__blob { animation-play-state: paused, running; }
+.is-still .stage .float, .is-still .stage .hotspot__dot::after { animation-play-state: paused; }
 
 /* ---------- Glass & surfaces ---------- */
 .glass {
@@ -911,6 +916,10 @@ main:focus { box-shadow: none; }
 .oss-card__mesh::before { right: -20%; top: -30%; background: color-mix(in oklch, var(--card-accent) 40%, transparent); animation: drift-1 14s ease-in-out infinite alternate; }
 .oss-card__mesh::after { left: -25%; bottom: -35%; background: color-mix(in oklch, var(--card-accent) 22%, #3a4bff 10%); animation: drift-2 18s ease-in-out infinite alternate; }
 .oss-card:hover .oss-card__mesh, .oss-card:focus-within .oss-card__mesh { opacity: 1; }
+/* The mesh is invisible until hover/focus, so only animate it then. */
+.oss-card__mesh::before, .oss-card__mesh::after { animation-play-state: paused; }
+.oss-card:is(:hover, :focus-within) .oss-card__mesh::before,
+.oss-card:is(:hover, :focus-within) .oss-card__mesh::after { animation-play-state: running; }
 .oss-card .oss-card__preview { width: 300px; top: -60px; right: -80px; }
 
 /* ---------- rtok: code graph ---------- */

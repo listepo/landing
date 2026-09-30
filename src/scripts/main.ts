@@ -59,6 +59,15 @@ function initStage() {
   });
 }
 
+/* Decorative loops (background drift, hero chips) pause while the hero is off screen.
+   Docs pages have no hero and are rendered with .is-still already. */
+function initStill() {
+  const root = document.documentElement;
+  const hero = document.querySelector("[data-stage]");
+  if (!hero || root.classList.contains("is-still")) return;
+  new IntersectionObserver(([en]) => root.classList.toggle("is-still", !en.isIntersecting)).observe(hero);
+}
+
 /* Copy buttons: button label flips to "Copied", a small toast confirms, aria-live announces. */
 function initCopy() {
   const live = document.createElement("p");
@@ -545,6 +554,7 @@ initBitset();
 initHotspots();
 initShine();
 initStage();
+initStill();
 initCopy();
 initAudience();
 initDocsNav();
