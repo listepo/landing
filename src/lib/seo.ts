@@ -55,7 +55,7 @@ export const organization = () => ({
   "@id": ORG_ID(),
   name: "listepo",
   url: HOME_URL(),
-  sameAs: ["https://github.com/listepo"],
+  sameAs: ["https://github.com/pyrlyn"],
 });
 
 export const website = (description: string) => ({
