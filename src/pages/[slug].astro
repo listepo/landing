@@ -255,8 +255,8 @@ const jsonLd = [
         <div class="tier__head"><h3 id="t-pro" class="h3">{d.title} Pro</h3><span class="badge badge--placeholder">Placeholder</span></div>
         <p class="price"><span class="price__num">{pro.price}</span><span class="muted small">per seat</span></p>
         <ul class="checklist">{pro.features.map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
-        <a class="btn btn--primary btn--block" href="#pricing" aria-describedby="t-pro-note">Join the Pro waitlist</a>
-        <p id="t-pro-note" class="muted small">Placeholder — checkout is not wired up in this MVP.</p>
+        <button class="btn btn--primary btn--block" type="button" aria-disabled="true" aria-describedby="t-pro-note">Join the Pro waitlist</button>
+        <p id="t-pro-note" class="muted small">Placeholder — the Pro waitlist is not open yet.</p>
       </article>
     </div>
   </section>

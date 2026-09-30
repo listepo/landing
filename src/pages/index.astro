@@ -181,12 +181,12 @@ const hotspots = [
           <div class="price-tier price-tier--pro">
             <div class="tier__head"><strong>Pro <span class="badge badge--placeholder">Placeholder</span></strong><span class="price__num price__num--sm">{proFor(p).price}</span></div>
             <ul class="checklist">{proFor(p).features.map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
-            <a class="btn btn--primary btn--block" href={u(`/${p.id}/#pricing`)} style={`--accent:${p.data.accent}`}>Join the Pro waitlist</a>
+            <button class="btn btn--primary btn--block" type="button" aria-disabled="true" aria-describedby="pricing-note" style={`--accent:${p.data.accent}`}>Join the Pro waitlist</button>
           </div>
         </article>
       ))}
     </div>
-    <p class="footnote">Placeholder links — checkout is not wired up in this MVP.</p>
+    <p class="footnote" id="pricing-note">Placeholder — the Pro waitlist is not open yet; checkout is not wired up in this MVP.</p>
   </section>
 
   <!-- FAQ -->
