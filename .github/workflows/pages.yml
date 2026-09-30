@@ -36,3 +36,5 @@ jobs:
         # SEO meta, headings, alt text, JSON-LD and sitemap
         npm run check:seo
       artifact-path: dist
+      # A manual run deploys the branch it runs on (the github-pages environment's branch policy still applies).
+      deploy-ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || 'refs/heads/main' }}
