@@ -185,7 +185,7 @@ function renderDoc(
   source: ProductDocs["source"],
 ): DocPage {
   const dir = file.includes("/") ? file.slice(0, file.lastIndexOf("/")) : "";
-  const repo = source?.repo ?? `listepo/${product}`;
+  const repo = source?.repo ?? `pyrlyn/${product}`;
   const ref = source?.sha ?? "main";
   const body = raw.replace(/^---\n[\s\S]*?\n---\n/, "");
   const h1 = body.match(/^#\s+(.+)$/m);

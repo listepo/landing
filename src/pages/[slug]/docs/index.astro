@@ -72,7 +72,7 @@ const lay2 = pack(want2, 2);
         {first && <a class="btn btn--primary btn--lg" href={docsHref(tool.id, first.slug)}>Start with {first.navTitle} <span aria-hidden="true">→</span></a>}
         <a class="btn btn--glass btn--lg" href={u(`/${tool.id}/`)}>About {d.title}</a>
       </div>
-      <p class="dhero__src">{docs.pages.length} pages from <a href={`https://github.com/${docs.source?.repo ?? `listepo/${tool.id}`}/tree/${docs.source?.ref ?? "main"}/docs`} rel="noopener"><code>{docs.source?.repo ?? `listepo/${tool.id}`}/docs</code></a>{shortSha && <> at <code>{shortSha}</code></>}, v{d.version}</p>
+      <p class="dhero__src">{docs.pages.length} pages from <a href={`https://github.com/${docs.source?.repo ?? `pyrlyn/${tool.id}`}/tree/${docs.source?.ref ?? "main"}/docs`} rel="noopener"><code>{docs.source?.repo ?? `pyrlyn/${tool.id}`}/docs</code></a>{shortSha && <> at <code>{shortSha}</code></>}, v{d.version}</p>
     </div>
     {o && (
       <ol class="cmdstrip glass glass--thick" aria-label="Commands to get going">

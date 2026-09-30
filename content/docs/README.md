@@ -7,9 +7,9 @@ repository instead.
 
 | Folder | Source |
 | --- | --- |
-| `rtok/` | [`listepo/rtok` `docs/`](https://github.com/listepo/rtok/tree/main/docs) |
-| `cox/` | [`listepo/cox` `docs/`](https://github.com/listepo/cox/tree/main/docs) |
-| `ketch/` | [`listepo/ketch` `docs/`](https://github.com/listepo/ketch/tree/main/docs) |
+| `rtok/` | [`pyrlyn/rtok` `docs/`](https://github.com/pyrlyn/rtok/tree/main/docs) |
+| `cox/` | [`pyrlyn/cox` `docs/`](https://github.com/pyrlyn/cox/tree/main/docs) |
+| `ketch/` | [`pyrlyn/ketch` `docs/`](https://github.com/pyrlyn/ketch/tree/main/docs) |
 
 ## How files arrive
 
@@ -19,7 +19,7 @@ The same `.github/workflows/sync-docs.yml` that syncs `docs/site.md` (see
 `content/docs/<repo name>/_source.json`:
 
 ```json
-{ "repo": "listepo/rtok", "sha": "<full commit sha>", "ref": "main" }
+{ "repo": "pyrlyn/rtok", "sha": "<full commit sha>", "ref": "main" }
 ```
 
 The site uses `sha` to point links at files outside `docs/` (source code, excluded docs,

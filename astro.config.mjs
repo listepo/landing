@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 const base = process.env.SITE_BASE ?? "/landing/";
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? "https://listepo.github.io",
+  site: process.env.SITE_URL ?? "https://pyrlyn.github.io",
   base,
   trailingSlash: "ignore",
   output: "static",

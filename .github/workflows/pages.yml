@@ -29,7 +29,7 @@ jobs:
       node-cache-dependency-path: package-lock.json
       setup-command: npm ci
       build-command: |
-        export SITE_URL=https://listepo.github.io SITE_BASE=/landing/
+        export SITE_URL=https://pyrlyn.github.io SITE_BASE=/landing/
         npm run build
         # docs coverage, headings and internal links
         npm run check:docs
