@@ -4,6 +4,7 @@
 import { Marked, type Tokens } from "marked";
 import nav from "../data/docs-nav.json";
 import { u } from "./site";
+import { safeHref, safeHtml } from "./html";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -194,7 +195,8 @@ function renderDoc(
   const slugger = makeSlugger();
   const toc: TocEntry[] = [];
 
-  const resolveHref = (href: string): string => {
+  const resolveHref = (raw: string): string => {
+    const href = safeHref(raw);
     if (/^(https?:|mailto:|#)/.test(href)) return href;
     const [pathPart, hash = ""] = href.split("#");
     const target = posixJoin(dir, decodeURI(pathPart));
@@ -228,6 +230,7 @@ function renderDoc(
         return `<a href="${esc(out)}"${ext ? ' rel="noopener"' : ""}>${text}</a>`;
       },
       image({ href, text }: Tokens.Image) {
+        if (safeHref(href) !== href) return esc(text);
         const src = /^https?:/.test(href) ? href : `https://raw.githubusercontent.com/${repo}/${ref}/${posixJoin("docs/" + dir, href)}`;
         return `<img src="${esc(src)}" alt="${esc(text)}" loading="lazy" decoding="async">`;
       },
@@ -235,6 +238,9 @@ function renderDoc(
         const head = token.header.map((c) => `<th${c.align ? ` style="text-align:${c.align}"` : ""}>${this.parser.parseInline(c.tokens)}</th>`).join("");
         const rows = token.rows.map((r) => `<tr>${r.map((c) => `<td${c.align ? ` style="text-align:${c.align}"` : ""}>${this.parser.parseInline(c.tokens)}</td>`).join("")}</tr>`).join("");
         return `<div class="table-wrap" tabindex="0" role="region" aria-label="Table"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+      },
+      html({ text }: Tokens.HTML | Tokens.Tag) {
+        return safeHtml(text);
       },
       blockquote({ tokens }: Tokens.Blockquote) {
         let inner = this.parser.parse(tokens);

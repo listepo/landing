@@ -1,5 +1,6 @@
 // Turns a project Markdown body into the structured pieces the page template renders.
 import { Marked, type Tokens } from "marked";
+import { safeHref, safeHtml } from "./html";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -28,8 +29,15 @@ md.use({
     },
     link({ href, tokens }: Tokens.Link) {
       const text = this.parser.parseInline(tokens);
-      const ext = /^https?:/.test(href);
-      return `<a href="${esc(href)}"${ext ? ' rel="noopener"' : ""}>${text}</a>`;
+      const out = safeHref(href);
+      const ext = /^https?:/.test(out);
+      return `<a href="${esc(out)}"${ext ? ' rel="noopener"' : ""}>${text}</a>`;
+    },
+    image({ href, text }: Tokens.Image) {
+      return `<img src="${esc(safeHref(href))}" alt="${esc(text)}" loading="lazy" decoding="async">`;
+    },
+    html({ text }: Tokens.HTML | Tokens.Tag) {
+      return safeHtml(text);
     },
   },
 });
