@@ -581,6 +581,8 @@ main:focus { box-shadow: none; }
 .links a:focus-visible { border-radius: var(--r-md); }
 .links a { transition: translate .2s ease-out, box-shadow .2s ease-out; }
 .links a:hover { translate: 0 -2px; box-shadow: var(--glass-edge), var(--shadow-3), 0 0 0 1px var(--accent-line); }
+/* 404 page: product and docs links under the actions. */
+.nf-links { margin-top: var(--s-7); }
 .links a span { transition: transform .2s ease-out; }
 .links a:hover span { transform: translate(2px, -2px); }
 .license { display: grid; gap: var(--s-4); margin-top: var(--s-6); }
