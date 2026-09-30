@@ -855,6 +855,10 @@ main:focus { box-shadow: none; }
 .ring__face { position: relative; transform: rotateY(calc(var(--rot) - var(--i) * var(--a))); transition: opacity .6s var(--ease), filter .6s var(--ease); }
 .ring__item:not(.is-active) .ring__face { opacity: .5; filter: saturate(.7) blur(.4px); }
 .ring__item.is-active { z-index: 2; }
+/* In preserve-3d the side cards sit behind the track's own plane, so the empty track and item
+   boxes won the hit test and those visible cards ignored clicks. Only cards and hotspots take pointers. */
+.ring__track, .ring__item, .ring__face { pointer-events: none; }
+.ring__card, .ring__hs { pointer-events: auto; }
 .ring__card {
   position: relative; display: grid; gap: var(--s-2); padding: var(--s-5); border-radius: var(--r-lg); color: var(--fg); overflow: hidden;
   background: radial-gradient(80% 60% at 50% 0%, color-mix(in oklch, var(--card-accent) 22%, transparent), transparent 70%), var(--glass-fill), color-mix(in oklch, var(--bg) 70%, #182030);
