@@ -508,6 +508,10 @@ function initScenes() {
   root.addEventListener("keydown", (e) => {
     if (e.key === "ArrowRight") { e.preventDefault(); set(active + 1, root.contains(document.activeElement) && (document.activeElement as HTMLElement).getAttribute("role") === "tab"); }
     if (e.key === "ArrowLeft") { e.preventDefault(); set(active - 1, root.contains(document.activeElement) && (document.activeElement as HTMLElement).getAttribute("role") === "tab"); }
+    // Tabs pattern: Home / End jump to the first / last tab.
+    if ((e.key === "Home" || e.key === "End") && (e.target as Element).getAttribute("role") === "tab") {
+      e.preventDefault(); set(e.key === "Home" ? 0 : panels.length - 1, true);
+    }
   });
   set(0);
   const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { io.disconnect(); seen = true; set(active); } }, { threshold: 0.35 });
