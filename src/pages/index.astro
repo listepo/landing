@@ -114,7 +114,7 @@ const hotspots = [
       {tools.map((p) => (
         <li class="card glass shine card--lift oss-card" style={`--card-accent:${p.data.accent}`}>
           <span class="oss-card__mesh" aria-hidden="true"></span>
-          <Picture class="oss-card__preview" dir={p.id} name="hero" widths={[1200]} sizes="420px" w={2400} h={1600} />
+          <Picture class="oss-card__preview" dir={p.id} name="hero" widths={[800, 1200]} sizes="300px" w={2400} h={1600} />
           <div class="oss-card__top">
             <span class="icon" aria-hidden="true">{glyph[p.id] ?? p.data.title.slice(0, 1)}</span>
             <span class="badge badge--version" style={`--accent:${p.data.accent}`}>v{p.data.version}</span>

@@ -3,7 +3,8 @@ const out = "/workspace/sm/public/images";
 const art = "/workspace/art";
 const jobs = [];
 for (const p of ["home", "rtok", "cox", "ketch"]) {
-  for (const w of [1200, 2400]) {
+  // 800w: catalog card previews (300px wide on the home page).
+  for (const w of p === "home" ? [1200, 2400] : [800, 1200, 2400]) {
     const img = () => sharp(`${art}/${p}-hero.png`).resize(w);
     jobs.push(img().webp({ quality: 78 }).toFile(`${out}/${p}/hero-${w}.webp`));
     jobs.push(img().avif({ quality: 55 }).toFile(`${out}/${p}/hero-${w}.avif`));
