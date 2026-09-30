@@ -316,7 +316,6 @@ main:focus { box-shadow: none; }
 .pyrlyn-by::before { content: ""; position: absolute; left: 0; top: 50%; width: 1px; height: 20px; translate: 0 -50%; background: var(--hairline-strong); }
 .pyrlyn-by:hover, .pyrlyn-by:focus-visible { opacity: 1; color: var(--muted); }
 .pyrlyn-by img { display: block; width: auto; height: 20px; }
-.pyrlyn-by--nav { margin-left: calc(-1 * var(--s-1)); }
 .pyrlyn-by--hero { padding-left: var(--s-4); }
 .pyrlyn-by--hero img { height: 28px; }
 .pyrlyn-by--footer img { height: 26px; }
