@@ -1,56 +1,38 @@
 name: Deploy to GitHub Pages
 
+# Astro build + docs and SEO checks, deployed to GitHub Pages through pyrlyn/infra's pages.yml.
 on:
   push:
     branches: [main]
-  # Pull requests run the build and the docs check only; deploy stays main-only.
+  # Pull requests run the build and the checks only; deploy stays main-only.
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-        env:
-          SITE_URL: https://listepo.github.io
-          SITE_BASE: /landing/
-      - name: Check docs coverage, headings and internal links
-        run: npm run check:docs
-        env:
-          SITE_BASE: /landing/
-      - name: Check SEO meta, headings, alt text, JSON-LD and sitemap
-        run: npm run check:seo
-        env:
-          SITE_URL: https://listepo.github.io
-          SITE_BASE: /landing/
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+  pages:
+    uses: pyrlyn/infra/.github/workflows/pages.yml@863d8960601216eec62d4aa78924f84ce61d72b9
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    with:
+      mise: false
+      node-version: "22"
+      node-cache-dependency-path: package-lock.json
+      setup-command: npm ci
+      build-command: |
+        export SITE_URL=https://listepo.github.io SITE_BASE=/landing/
+        npm run build
+        # docs coverage, headings and internal links
+        npm run check:docs
+        # SEO meta, headings, alt text, JSON-LD and sitemap
+        npm run check:seo
+      artifact-path: dist
