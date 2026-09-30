@@ -356,12 +356,19 @@ function initRing() {
     if (!moved && Math.abs(dx) > 6) { moved = true; stop(); stage.classList.add("is-dragging"); }
     if (moved) { rot = startRot - dx * 0.35; track.style.setProperty("--rot", `${rot}deg`); }
   });
-  addEventListener("pointerup", () => {
+  const endDrag = () => {
     if (!dragging) return;
     dragging = false; stage.classList.remove("is-dragging");
     if (!moved) return;
     const k = Math.round(rot / step); rot = k * step; index = ((k % n) + n) % n; render();
-  });
+    // The click that ends a drag (if any) fires right after pointerup; forget the drag after it,
+    // so a drag released outside the stage cannot swallow the next click.
+    setTimeout(() => { moved = false; }, 0);
+  };
+  addEventListener("pointerup", endDrag);
+  // A touch that turns into a vertical scroll is cancelled: snap to the nearest card instead of
+  // leaving the ring half-turned with dragging still on.
+  addEventListener("pointercancel", endDrag);
   stage.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
   // auto-rotate: only with motion allowed, never after the user took over, paused on hover/focus
   const startAuto = () => {
