@@ -883,6 +883,8 @@ main:focus { box-shadow: none; }
 /* No JS or narrow screens: a plain grid of the same cards. */
 .ring:not(.is-ready) .ring__stage, .ring:not(.is-ready) .ring__track, .ring:not(.is-ready) .ring__item, .ring:not(.is-ready) .ring__face { all: unset; display: block; }
 .ring:not(.is-ready) .ring__track { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-3); }
+/* `all: unset` drops position: relative; each card keeps its own hotspot, not one stacked on the ring. */
+.ring:not(.is-ready) .ring__face { position: relative; }
 @media (max-width: 767px) {
   .stage--ring { min-height: 0; aspect-ratio: auto; }
   .stage--ring .stage__art { inset: -10% -30% auto; height: 70%; opacity: .35; }
@@ -890,6 +892,7 @@ main:focus { box-shadow: none; }
   .stage--ring .stage__tilt { position: relative; }
   .stage__ring { position: relative; inset: auto; }
   .ring__stage, .ring__track, .ring__item, .ring__face { all: unset; display: block; }
+  .ring__face { position: relative; }
   .ring__track { display: grid; gap: var(--s-3); }
   .ring__item:not(.is-active) .ring__face { opacity: 1; filter: none; }
   .ring__item:not(.is-active) .ring__hs { visibility: visible; }
