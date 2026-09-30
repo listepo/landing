@@ -235,6 +235,14 @@ function initMenu() {
     if (e.key !== "Escape") return;
     for (const m of menus) if (m.open) { m.open = false; m.querySelector("summary")?.focus(); }
   });
+  // Tabbing past the last item closes the panel instead of leaving it open over the page.
+  // (A null relatedTarget is a click on a non-focusable spot; outside clicks are handled above.)
+  for (const m of menus) {
+    m.addEventListener("focusout", (e) => {
+      const to = e.relatedTarget as Node | null;
+      if (m.open && to && !m.contains(to)) m.open = false;
+    });
+  }
 }
 
 /* Terminal demo: type once in view; Pause / Replay; static final state under reduced motion. */
