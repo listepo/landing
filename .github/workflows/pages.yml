@@ -29,7 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          SITE_URL: https://listepo.github.io
+          SITE_URL: https://pyrlyn.github.io
           SITE_BASE: /landing/
       - name: Check docs coverage, headings and internal links
         run: npm run check:docs
@@ -38,7 +38,7 @@ jobs:
       - name: Check SEO meta, headings, alt text, JSON-LD and sitemap
         run: npm run check:seo
         env:
-          SITE_URL: https://listepo.github.io
+          SITE_URL: https://pyrlyn.github.io
           SITE_BASE: /landing/
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -6,9 +6,9 @@ source repository instead.
 
 | File | Source |
 | --- | --- |
-| `rtok.md` | [`listepo/rtok` `docs/site.md`](https://github.com/listepo/rtok/blob/main/docs/site.md) |
-| `cox.md` | [`listepo/cox` `docs/site.md`](https://github.com/listepo/cox/blob/main/docs/site.md) |
-| `ketch.md` | [`listepo/ketch` `docs/site.md`](https://github.com/listepo/ketch/blob/main/docs/site.md) |
+| `rtok.md` | [`pyrlyn/rtok` `docs/site.md`](https://github.com/pyrlyn/rtok/blob/main/docs/site.md) |
+| `cox.md` | [`pyrlyn/cox` `docs/site.md`](https://github.com/pyrlyn/cox/blob/main/docs/site.md) |
+| `ketch.md` | [`pyrlyn/ketch` `docs/site.md`](https://github.com/pyrlyn/ketch/blob/main/docs/site.md) |
 
 ## How files arrive
 
@@ -28,7 +28,7 @@ hand (`workflow_dispatch`). It copies `docs/site.md` to
 | --- | --- | --- |
 | `title` | string | Project name as the repository spells it (`rtok`, `cox`, `ketch`) |
 | `tagline` | string, at most 160 characters | One-sentence pitch |
-| `repo` | URL | `https://github.com/listepo/<name>` |
+| `repo` | URL | `https://github.com/pyrlyn/<name>` |
 | `homepage` | URL | The project's own documentation site |
 | `install` | string | Primary install command, one line |
 | `install_alternatives` | list of strings, optional | Other install commands, in the order the README lists them |

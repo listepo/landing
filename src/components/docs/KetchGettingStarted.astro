@@ -20,7 +20,7 @@ const steps = [
   {
     title: "Install your first tool",
     text: "Point ketch at any repository that publishes releases. It picks the asset built for your machine, checks the SHA-256 the release published, and links the binary onto your `PATH`.",
-    code: "ketch install listepo/rtok",
+    code: "ketch install pyrlyn/rtok",
   },
 ];
 ---
@@ -55,8 +55,8 @@ const steps = [
         <p>ketch reports each stage: resolving the package, downloading the asset for your platform, verifying the checksum, and the installed version. The tool is on your <code class="inline-code">PATH</code> straight away.</p>
         <figure class="term glass glass--thick gs__term">
           <div class="term__bar"><span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="term__title">ketch — install &amp; verify</span></div>
-          <pre class="term__body gs__out" tabindex="0" aria-label="Example output"><span class="gs__p">$</span> ketch install listepo/rtok
-<span class="gs__dim">resolving</span>   rtok (github:listepo/rtok)
+          <pre class="term__body gs__out" tabindex="0" aria-label="Example output"><span class="gs__p">$</span> ketch install pyrlyn/rtok
+<span class="gs__dim">resolving</span>   rtok (github:pyrlyn/rtok)
 <span class="gs__dim">downloading</span> rtok-aarch64-apple-darwin.tar.xz
 <span class="gs__warn">verified</span>    sha256 published by the release
 <span class="gs__ok">installed</span>   rtok 0.1.0

@@ -5,7 +5,7 @@ GitHub Pages. The home page is the storefront (catalog, featured tool, how it wo
 FAQ); every product gets its own showcase page generated from one Markdown file, and a docs section
 generated from the product's own `docs/` folder.
 
-Live: https://listepo.github.io/landing/ — showcase pages `/landing/rtok/`, `/landing/cox/`,
+Live: https://pyrlyn.github.io/landing/ — showcase pages `/landing/rtok/`, `/landing/cox/`,
 `/landing/ketch/`; docs under `/landing/<product>/docs/` (overview) and `/landing/<product>/docs/<slug>/`.
 
 > The previous site in this repository is preserved in branch and tag `archive/toha-landing-2026-09-27`.
@@ -21,7 +21,7 @@ npm run check:seo   # after a build: title/description/canonical/OG per page, on
 npm run preview   # serve dist
 ```
 
-`astro.config.mjs` reads `SITE_URL` (default `https://listepo.github.io`) and `SITE_BASE` (default
+`astro.config.mjs` reads `SITE_URL` (default `https://pyrlyn.github.io`) and `SITE_BASE` (default
 `/landing/`). Every internal link and asset goes through `u()` in `src/lib/site.ts`, so moving the site is a
 one-line change. `.github/workflows/pages.yml` builds, runs `check:docs` and `check:seo` and deploys on every push to
 `main`; pull requests run the build and the check without deploying.

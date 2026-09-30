@@ -24,13 +24,13 @@ export const OVERVIEWS: Record<string, Overview> = {
     headline: "Less context for your agent, every saving on record.",
     lead: "rtok reduces the context AI coding agents must carry. One Rust binary, three surfaces: Claude Code hooks, an MCP server, and an API proxy. Each reduction is measured; shortened payloads stay retrievable by id.",
     strip: [
-      { label: "Install", cmd: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/listepo/rtok/releases/latest/download/rtok-installer.sh | sh" },
+      { label: "Install", cmd: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/pyrlyn/rtok/releases/latest/download/rtok-installer.sh | sh" },
       { label: "Configure", cmd: "rtok config init" },
       { label: "Inspect", cmd: "rtok doctor" },
       { label: "Wire in", cmd: "rtok agents install claude --dry-run" },
     ],
     steps: [
-      { title: "Install one binary", text: "Prebuilt binaries for macOS (Apple silicon or Intel) and Linux x86-64. The installer puts `rtok` and `rtok-update` in `~/.cargo/bin`; `ketch install listepo/rtok` works too.", cmd: "ketch install listepo/rtok" },
+      { title: "Install one binary", text: "Prebuilt binaries for macOS (Apple silicon or Intel) and Linux x86-64. The installer puts `rtok` and `rtok-update` in `~/.cargo/bin`; `ketch install pyrlyn/rtok` works too.", cmd: "ketch install pyrlyn/rtok" },
       { title: "Price what you already run", text: "`rtok doctor` is worth running before you install anything: it prices the hooks and MCP servers you already have, including description tokens re-sent on every turn.", cmd: "rtok doctor" },
       { title: "Wire it into your agent", text: "`--dry-run` prints the hook entries and touches nothing. Install backs up every file it writes, and `uninstall` takes it out again.", cmd: "rtok agents install claude" },
       { title: "Expand anything that was cut", text: "Lossless by default: anything shortened is retrievable by id, and a saving that is not a `Measurement` row does not exist.", cmd: "rtok expand <id>" },
@@ -80,7 +80,7 @@ export const OVERVIEWS: Record<string, Overview> = {
       { label: "TUI", cmd: "./target/debug/cox" },
     ],
     steps: [
-      { title: "Build it", text: "Rust is pinned with mise. Prefer `mise exec -- cargo …` over a global toolchain.", cmd: "git clone https://github.com/listepo/cox && cd cox\nmise exec -- cargo build -p cox" },
+      { title: "Build it", text: "Rust is pinned with mise. Prefer `mise exec -- cargo …` over a global toolchain.", cmd: "git clone https://github.com/pyrlyn/cox && cd cox\nmise exec -- cargo build -p cox" },
       { title: "Add a key and check", text: "Export `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) and run `cox doctor` — green except prices? You are good.", cmd: "./target/debug/cox doctor" },
       { title: "Run a turn", text: "`cox` opens the TUI: `Enter` sends, `Esc` interrupts. `y` / `s` / `n` answer approval prompts, `/model` switches tiers, `/compact` compacts context now.", cmd: "./target/debug/cox" },
       { title: "Script it", text: "`cox run -p` is the headless form. `--output-format stream-json` prints the same `Event` JSON the TUI renders, one object per line.", cmd: "./target/debug/cox run -p \"summarise the diff\" --output-format stream-json" },
@@ -119,7 +119,7 @@ export const OVERVIEWS: Record<string, Overview> = {
     headline: "Catch releases straight from GitHub.",
     lead: "ketch installs command-line tools and apps from GitHub releases on macOS, Linux, and Windows. It picks the release asset built for your machine, checks the checksum the project published, unpacks it into a versioned store, and links it onto your `PATH`.",
     strip: [
-      { label: "Install", cmd: "curl -fsSL https://raw.githubusercontent.com/listepo/ketch/main/install.sh | bash" },
+      { label: "Install", cmd: "curl -fsSL https://raw.githubusercontent.com/pyrlyn/ketch/main/install.sh | bash" },
       { label: "First tool", cmd: "ketch install BurntSushi/ripgrep" },
       { label: "Lock", cmd: "ketch lock" },
       { label: "Reproduce", cmd: "ketch sync" },
