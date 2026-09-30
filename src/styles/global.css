@@ -681,6 +681,9 @@ main:focus { box-shadow: none; }
   position: absolute; top: calc(100% + 12px); left: -12px; z-index: 60; width: min(560px, calc(100vw - 32px));
   display: grid; gap: var(--s-2); padding: var(--s-3); border-radius: var(--r-lg);
   background: var(--glass-fill), color-mix(in oklch, var(--bg) 78%, #1b2130);
+  /* The header is sticky, so the panel never scrolls with the page: let it scroll itself on
+     short viewports (landscape phones) instead of cutting off the last items. */
+  max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain;
 }
 .menu__label { padding: var(--s-1) var(--s-3); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--subtle); }
 .menu__grid { display: grid; gap: 2px; }
@@ -708,7 +711,7 @@ main:focus { box-shadow: none; }
   .nav__links { display: flex; margin-right: auto; }
   .nav__links > li:not(.menu) { display: none; }
   .nav__links .nav__sep { display: none; }
-  .menu__panel { position: fixed; top: 80px; left: 16px; right: 16px; width: auto; }
+  .menu__panel { position: fixed; top: 80px; left: 16px; right: 16px; width: auto; max-height: calc(100dvh - 104px); }
   .menu__price { display: none; }
   .menu__current { display: none; }
 }
