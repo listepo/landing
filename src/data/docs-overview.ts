@@ -30,7 +30,7 @@ export const OVERVIEWS: Record<string, Overview> = {
       { label: "Wire in", cmd: "rtok agents install claude --dry-run" },
     ],
     steps: [
-      { title: "Install one binary", text: "Prebuilt binaries for macOS (Apple silicon or Intel) and Linux x86-64. The installer puts `rtok` and `rtok-update` in `~/.cargo/bin`; `ketch install pyrlyn/rtok` works too.", cmd: "ketch install pyrlyn/rtok" },
+      { title: "Install one binary", text: "Prebuilt binaries for macOS (Apple silicon) and Linux x86-64. The installer puts `rtok` and `rtok-update` in `~/.cargo/bin`; `ketch install pyrlyn/rtok` works too.", cmd: "ketch install pyrlyn/rtok" },
       { title: "Price what you already run", text: "`rtok doctor` is worth running before you install anything: it prices the hooks and MCP servers you already have, including description tokens re-sent on every turn.", cmd: "rtok doctor" },
       { title: "Wire it into your agent", text: "`--dry-run` prints the hook entries and touches nothing. Install backs up every file it writes, and `uninstall` takes it out again.", cmd: "rtok agents install claude" },
       { title: "Expand anything that was cut", text: "Lossless by default: anything shortened is retrievable by id, and a saving that is not a `Measurement` row does not exist.", cmd: "rtok expand <id>" },

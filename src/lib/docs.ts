@@ -213,7 +213,9 @@ function renderDoc(
     renderer: {
       heading({ tokens, depth, text }: Tokens.Heading) {
         const inner = this.parser.parseInline(tokens);
-        const id = slugger(text.replace(/`/g, ""));
+        // Inside a code span `<NAME>` is text, which GitHub's anchors keep as `name`; only the
+        // `<...>` left outside code spans is HTML for the slugger to drop.
+        const id = slugger(text.replace(/`([^`]*)`/g, (_, code: string) => code.replace(/[<>]/g, "")));
         const d = Math.min(Math.max(depth, 2), 6);
         if (d === 2 || d === 3) toc.push({ id, text: plain(text), depth: d as 2 | 3 });
         return `<h${d} id="${esc(id)}" class="doc-h"><a class="doc-anchor" href="#${esc(id)}" aria-label="Link to this section"></a>${inner}</h${d}>\n`;
