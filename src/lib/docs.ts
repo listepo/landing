@@ -54,9 +54,13 @@ export const slugOf = (file: string) => file.replace(/\.md$/i, "").toLowerCase()
 export function makeSlugger() {
   const seen = new Map<string, number>();
   return (text: string) => {
+    // HTML tags are dropped, but text inside code spans is literal (`<NAME>` stays "name"),
+    // as on GitHub, so the anchors the docs link to keep resolving.
     const base = text
+      .split(/(`+[^`]*`+)/)
+      .map((part) => (part.startsWith("`") ? part.replace(/`/g, "") : part.replace(/<[^>]+>/g, "")))
+      .join("")
       .toLowerCase()
-      .replace(/<[^>]+>/g, "")
       .replace(/[^\p{L}\p{N}\s_-]/gu, "")
       .trim()
       .replace(/\s/g, "-");
@@ -213,7 +217,7 @@ function renderDoc(
     renderer: {
       heading({ tokens, depth, text }: Tokens.Heading) {
         const inner = this.parser.parseInline(tokens);
-        const id = slugger(text.replace(/`/g, ""));
+        const id = slugger(text);
         const d = Math.min(Math.max(depth, 2), 6);
         if (d === 2 || d === 3) toc.push({ id, text: plain(text), depth: d as 2 | 3 });
         return `<h${d} id="${esc(id)}" class="doc-h"><a class="doc-anchor" href="#${esc(id)}" aria-label="Link to this section"></a>${inner}</h${d}>\n`;
