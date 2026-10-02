@@ -19,8 +19,8 @@ hand (`workflow_dispatch`). It copies `docs/site.md` to
 `github-actions[bot]` only when the file changed. It authenticates with a write-enabled deploy key
 (`docs-sync`) on this repository; each source repository holds the private half as the
 `SITE_DEPLOY_KEY` secret. On a tag push the `version:` field is set from the tag (`v1.2.3` →
-`1.2.3`). The same run mirrors the rest of `docs/**/*.md` into `content/docs/<repo name>/`
-(see `content/docs/README.md`).
+`1.2.3`). The same run mirrors the rest of the user-facing `docs/**/*.md` into
+`content/docs/<repo name>/` (see `content/docs/README.md`).
 
 ## Front matter
 
