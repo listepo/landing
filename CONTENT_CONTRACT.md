@@ -48,8 +48,10 @@ An HTML comment naming the source, then these H2 sections, in this order:
 ## Docs — `content/docs/<slug>/**/*.md`
 
 The product's docs section is generated from a copy of its repository's `docs/` folder (every
-`*.md` except `docs/site.md`), synced by the same workflow as the showcase file. The showcase
-page keeps its README-derived text; the docs pages are separate:
+user-facing `*.md` except `docs/site.md`; internal pages such as plans, research, audits, design
+notes and maintainer runbooks are left out by the workflow's rsync filter), synced by the same
+workflow as the showcase file. The showcase page keeps its README-derived text; the docs pages
+are separate:
 
 | Page | URL | Source |
 | --- | --- | --- |

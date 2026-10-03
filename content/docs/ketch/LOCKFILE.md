@@ -10,6 +10,9 @@ ketch lock --check      # has the tree drifted from it?
 ketch sync              # install what the lockfile names, at those versions
 ```
 
+Its JSON Schema, generated from the types ketch reads it into, is
+[lock.schema.json](https://github.com/pyrlyn/ketch/blob/main/docs/lock.schema.json).
+
 It is not the lock ketch takes while it works — that one is a mutex over the
 install tree, held for the length of a command and released at the end.
 
@@ -62,8 +65,8 @@ choice was made.
 That is the point of writing one down.
 
 **The asset and its hash are only reproducible on the same target.** A lock
-written on Apple Silicon names an `aarch64` tarball that an Intel machine
-cannot run. So:
+written on Apple Silicon names an `aarch64` tarball that an x86_64 Linux
+machine cannot run. So:
 
 - On a machine whose `target` matches, `sync` holds the download to the
   recorded `sha256` and refuses it before unpacking anything if it disagrees.
