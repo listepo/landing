@@ -94,7 +94,9 @@ p { text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 code, pre, kbd { font-family: var(--font-mono); }
 :focus { outline: none; }
-:focus-visible { outline: none; box-shadow: var(--focus); border-radius: var(--r-xs); }
+/* The ring is a box-shadow; the transparent outline is what forced-colors mode (which drops
+   box-shadows) paints in the system colour, so keyboard focus stays visible there. */
+:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--focus); border-radius: var(--r-xs); }
 main:focus { box-shadow: none; }
 ::selection { background: color-mix(in oklch, var(--accent) 40%, transparent); color: var(--fg-strong); }
 
@@ -142,6 +144,11 @@ main:focus { box-shadow: none; }
 @keyframes drift-1 { to { transform: translate3d(6%, 5%, 0) scale(1.08); } }
 @keyframes drift-2 { to { transform: translate3d(-6%, 7%, 0) scale(.92); } }
 @keyframes drift-3 { to { transform: translate3d(5%, -6%, 0) scale(1.1); } }
+/* Idle cost: the drift and hero loops redraw every frame under many backdrop-filter layers.
+   Docs pages render with .is-still; other pages get it from JS while the hero is off screen.
+   The first play state pauses the drift, the second keeps the scroll-driven parallax. */
+.is-still .mesh__blob { animation-play-state: paused, running; }
+.is-still .stage .float, .is-still .stage .hotspot__dot::after { animation-play-state: paused; }
 
 /* ---------- Glass & surfaces ---------- */
 .glass {
@@ -188,6 +195,10 @@ main:focus { box-shadow: none; }
 }
 .btn--primary:hover { translate: 0 -1px; box-shadow: inset 0 1px 0 rgb(255 255 255 / .55), inset 0 -1px 0 rgb(0 0 0 / .18), 0 0 0 1px color-mix(in oklch, var(--accent) 60%, black), 0 14px 36px -10px var(--accent-glow); }
 .btn--primary:focus-visible { box-shadow: var(--focus); }
+/* Placeholder actions (Pro waitlist): focusable and announced as unavailable, visibly muted. */
+.btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; filter: saturate(.6); }
+.btn[aria-disabled="true"]:hover { translate: none; }
+.btn[aria-disabled="true"]:active { scale: none; }
 .btn--glass { color: var(--fg-strong); background: var(--glass-fill), rgb(255 255 255 / .03); box-shadow: var(--glass-edge), var(--shadow-1); -webkit-backdrop-filter: blur(var(--blur-2)); backdrop-filter: blur(var(--blur-2)); }
 .btn--glass:hover { translate: 0 -1px; background: var(--glass-fill), rgb(255 255 255 / .07); }
 .btn--glass:focus-visible { box-shadow: var(--focus); }
@@ -303,7 +314,7 @@ main:focus { box-shadow: none; }
   box-shadow: var(--glass-edge), var(--shadow-2);
   -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
 }
-.brand { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; padding-right: var(--s-2); font-weight: 700; letter-spacing: -.02em; color: var(--fg-strong); }
+.brand { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: 44px; min-width: 44px; padding-right: var(--s-2); font-weight: 700; letter-spacing: -.02em; color: var(--fg-strong); }
 .brand__mark { width: 26px; height: 26px; border-radius: 8px; flex: none;
   background: conic-gradient(from 210deg, var(--accent), var(--accent-2), var(--accent));
   box-shadow: inset 0 1px #ffffff66, inset 0 -1px #0004, 0 4px 12px -4px var(--accent-glow); position: relative; }
@@ -572,6 +583,8 @@ main:focus { box-shadow: none; }
 .links a:focus-visible { border-radius: var(--r-md); }
 .links a { transition: translate .2s ease-out, box-shadow .2s ease-out; }
 .links a:hover { translate: 0 -2px; box-shadow: var(--glass-edge), var(--shadow-3), 0 0 0 1px var(--accent-line); }
+/* 404 page: product and docs links under the actions. */
+.nf-links { margin-top: var(--s-7); }
 .links a span { transition: transform .2s ease-out; }
 .links a:hover span { transform: translate(2px, -2px); }
 .license { display: grid; gap: var(--s-4); margin-top: var(--s-6); }
@@ -668,6 +681,9 @@ main:focus { box-shadow: none; }
   position: absolute; top: calc(100% + 12px); left: -12px; z-index: 60; width: min(560px, calc(100vw - 32px));
   display: grid; gap: var(--s-2); padding: var(--s-3); border-radius: var(--r-lg);
   background: var(--glass-fill), color-mix(in oklch, var(--bg) 78%, #1b2130);
+  /* The header is sticky, so the panel never scrolls with the page: let it scroll itself on
+     short viewports (landscape phones) instead of cutting off the last items. */
+  max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain;
 }
 .menu__label { padding: var(--s-1) var(--s-3); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--subtle); }
 .menu__grid { display: grid; gap: 2px; }
@@ -695,7 +711,7 @@ main:focus { box-shadow: none; }
   .nav__links { display: flex; margin-right: auto; }
   .nav__links > li:not(.menu) { display: none; }
   .nav__links .nav__sep { display: none; }
-  .menu__panel { position: fixed; top: 80px; left: 16px; right: 16px; width: auto; }
+  .menu__panel { position: fixed; top: 80px; left: 16px; right: 16px; width: auto; max-height: calc(100dvh - 104px); }
   .menu__price { display: none; }
   .menu__current { display: none; }
 }
@@ -855,6 +871,10 @@ main:focus { box-shadow: none; }
 .ring__face { position: relative; transform: rotateY(calc(var(--rot) - var(--i) * var(--a))); transition: opacity .6s var(--ease), filter .6s var(--ease); }
 .ring__item:not(.is-active) .ring__face { opacity: .5; filter: saturate(.7) blur(.4px); }
 .ring__item.is-active { z-index: 2; }
+/* In preserve-3d the side cards sit behind the track's own plane, so the empty track and item
+   boxes won the hit test and those visible cards ignored clicks. Only cards and hotspots take pointers. */
+.ring__track, .ring__item, .ring__face { pointer-events: none; }
+.ring__card, .ring__hs { pointer-events: auto; }
 .ring__card {
   position: relative; display: grid; gap: var(--s-2); padding: var(--s-5); border-radius: var(--r-lg); color: var(--fg); overflow: hidden;
   background: radial-gradient(80% 60% at 50% 0%, color-mix(in oklch, var(--card-accent) 22%, transparent), transparent 70%), var(--glass-fill), color-mix(in oklch, var(--bg) 70%, #182030);
@@ -883,6 +903,8 @@ main:focus { box-shadow: none; }
 /* No JS or narrow screens: a plain grid of the same cards. */
 .ring:not(.is-ready) .ring__stage, .ring:not(.is-ready) .ring__track, .ring:not(.is-ready) .ring__item, .ring:not(.is-ready) .ring__face { all: unset; display: block; }
 .ring:not(.is-ready) .ring__track { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-3); }
+/* `all: unset` drops position: relative; each card keeps its own hotspot, not one stacked on the ring. */
+.ring:not(.is-ready) .ring__face { position: relative; }
 @media (max-width: 767px) {
   .stage--ring { min-height: 0; aspect-ratio: auto; }
   .stage--ring .stage__art { inset: -10% -30% auto; height: 70%; opacity: .35; }
@@ -890,6 +912,7 @@ main:focus { box-shadow: none; }
   .stage--ring .stage__tilt { position: relative; }
   .stage__ring { position: relative; inset: auto; }
   .ring__stage, .ring__track, .ring__item, .ring__face { all: unset; display: block; }
+  .ring__face { position: relative; }
   .ring__track { display: grid; gap: var(--s-3); }
   .ring__item:not(.is-active) .ring__face { opacity: 1; filter: none; }
   .ring__item:not(.is-active) .ring__hs { visibility: visible; }
@@ -904,6 +927,10 @@ main:focus { box-shadow: none; }
 .oss-card__mesh::before { right: -20%; top: -30%; background: color-mix(in oklch, var(--card-accent) 40%, transparent); animation: drift-1 14s ease-in-out infinite alternate; }
 .oss-card__mesh::after { left: -25%; bottom: -35%; background: color-mix(in oklch, var(--card-accent) 22%, #3a4bff 10%); animation: drift-2 18s ease-in-out infinite alternate; }
 .oss-card:hover .oss-card__mesh, .oss-card:focus-within .oss-card__mesh { opacity: 1; }
+/* The mesh is invisible until hover/focus, so only animate it then. */
+.oss-card__mesh::before, .oss-card__mesh::after { animation-play-state: paused; }
+.oss-card:is(:hover, :focus-within) .oss-card__mesh::before,
+.oss-card:is(:hover, :focus-within) .oss-card__mesh::after { animation-play-state: running; }
 .oss-card .oss-card__preview { width: 300px; top: -60px; right: -80px; }
 
 /* ---------- rtok: code graph ---------- */

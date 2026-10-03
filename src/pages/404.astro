@@ -1,0 +1,33 @@
+---
+// Not-found page. GitHub Pages serves dist/404.html for any missing path under the base,
+// so every link and asset here goes through u() (absolute, base-prefixed).
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { u } from "../lib/site";
+import { getTools } from "../lib/catalog";
+import { productsWithDocs } from "../lib/docs";
+
+const tools = await getTools();
+const withDocs = new Set(productsWithDocs());
+---
+<Base title="Page not found · listepo tools" description="This page does not exist or has moved. Browse the catalog of AI developer tools or open a product's docs." theme="home" noindex>
+  <section class="section container container--narrow" aria-labelledby="nf-title">
+    <header class="section__head">
+      <p class="eyebrow">404</p>
+      <h1 id="nf-title" class="display">Page not found.</h1>
+      <p class="lead">The page you asked for does not exist or has moved. Pick up from the catalog or a product page.</p>
+    </header>
+    <div class="hero__ctas">
+      <a class="btn btn--primary btn--lg" href={u("/")}>Go to the home page <Icon name="arrow" size={18} /></a>
+      <a class="btn btn--glass btn--lg" href={u("/#catalog")}>Browse the catalog</a>
+    </div>
+    <ul class="links nf-links" role="list">
+      {tools.map((t) => (
+        <li><a class="glass shine" href={u(`/${t.id}/`)}>{t.data.title} — {t.data.tagline}<span aria-hidden="true">→</span></a></li>
+      ))}
+      {tools.filter((t) => withDocs.has(t.id)).map((t) => (
+        <li><a class="glass shine" href={u(`/${t.id}/docs/`)}>{t.data.title} docs<span aria-hidden="true">→</span></a></li>
+      ))}
+    </ul>
+  </section>
+</Base>

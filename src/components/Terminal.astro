@@ -18,8 +18,9 @@ const transcript = demo.steps.map((s) => [`$ ${s.cmd}`, s.note, ...(s.out ?? [])
 <figure class:list={["term glass glass--thick", cls]} data-term data-term-manual={manual ? "" : undefined} aria-labelledby={`${id}-cap`}>
   <div class="term__bar">
     <span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span class="term__title">{demo.title}</span>
-    <button class="term__ctl" type="button" data-term-ctl hidden>Replay</button>
+    <span class="term__title" id={`${id}-title`}>{demo.title}</span>
+    <!-- Described by the terminal title, so several Pause/Replay buttons on a page are told apart. -->
+    <button class="term__ctl" type="button" data-term-ctl aria-describedby={`${id}-title`} hidden>Replay</button>
   </div>
   <pre class="term__body" aria-hidden="true"><code set:html={html} /></pre>
   <pre class="sr-only">{transcript}</pre>

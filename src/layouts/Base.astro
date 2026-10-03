@@ -23,8 +23,10 @@ interface Props {
   imageAlt?: string;
   /** schema.org nodes for this page, emitted as one JSON-LD graph. */
   jsonLd?: object[];
+  /** Keep the page out of search results and skip the canonical link (the 404 page). */
+  noindex?: boolean;
 }
-const { title, description, theme, ogType = "website", imageAlt, jsonLd = [], ...over } = Astro.props;
+const { title, description, theme, ogType = "website", imageAlt, jsonLd = [], noindex = false, ...over } = Astro.props;
 const t = { ...THEMES[theme], ...Object.fromEntries(Object.entries(over).filter(([, v]) => v)) };
 const vars = `--accent:${t.accent};--accent-2:${t.accent2};--accent-light:${t.accentLight};--bg:${t.bg}`;
 const og = new URL(u(`/images/${t.images}/og.jpg`), Astro.site).href;
@@ -36,7 +38,7 @@ const docTools = tools.filter((x) => withDocs.has(x.id));
 const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
 ---
 <!doctype html>
-<html lang="en" style={vars} data-theme={theme}>
+<html lang="en" style={vars} data-theme={theme} class={inDocs ? "is-still" : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -44,8 +46,8 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content={t.bg} />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large"} />
+    {!noindex && <link rel="canonical" href={canonical} />}
     <!-- Pyrlyn favicon (public/pyrlyn/); the previous public/favicon.svg stays in the repo, unlinked. -->
     <link rel="icon" href={u("/pyrlyn/pyrlyn-favicon.svg")} type="image/svg+xml" />
     <link rel="icon" href={u("/pyrlyn/pyrlyn-favicon-32.png")} type="image/png" sizes="32x32" />
@@ -58,7 +60,7 @@ const inDocs = /\/docs(\/|$)/.test(Astro.url.pathname);
     <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={og} />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />

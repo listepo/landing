@@ -59,6 +59,15 @@ function initStage() {
   });
 }
 
+/* Decorative loops (background drift, hero chips) pause while the hero is off screen.
+   Docs pages have no hero and are rendered with .is-still already. */
+function initStill() {
+  const root = document.documentElement;
+  const hero = document.querySelector("[data-stage]");
+  if (!hero || root.classList.contains("is-still")) return;
+  new IntersectionObserver(([en]) => root.classList.toggle("is-still", !en.isIntersecting)).observe(hero);
+}
+
 /* Copy buttons: button label flips to "Copied", a small toast confirms, aria-live announces. */
 function initCopy() {
   const live = document.createElement("p");
@@ -226,6 +235,14 @@ function initMenu() {
     if (e.key !== "Escape") return;
     for (const m of menus) if (m.open) { m.open = false; m.querySelector("summary")?.focus(); }
   });
+  // Tabbing past the last item closes the panel instead of leaving it open over the page.
+  // (A null relatedTarget is a click on a non-focusable spot; outside clicks are handled above.)
+  for (const m of menus) {
+    m.addEventListener("focusout", (e) => {
+      const to = e.relatedTarget as Node | null;
+      if (m.open && to && !m.contains(to)) m.open = false;
+    });
+  }
 }
 
 /* Terminal demo: type once in view; Pause / Replay; static final state under reduced motion. */
@@ -356,12 +373,19 @@ function initRing() {
     if (!moved && Math.abs(dx) > 6) { moved = true; stop(); stage.classList.add("is-dragging"); }
     if (moved) { rot = startRot - dx * 0.35; track.style.setProperty("--rot", `${rot}deg`); }
   });
-  addEventListener("pointerup", () => {
+  const endDrag = () => {
     if (!dragging) return;
     dragging = false; stage.classList.remove("is-dragging");
     if (!moved) return;
     const k = Math.round(rot / step); rot = k * step; index = ((k % n) + n) % n; render();
-  });
+    // The click that ends a drag (if any) fires right after pointerup; forget the drag after it,
+    // so a drag released outside the stage cannot swallow the next click.
+    setTimeout(() => { moved = false; }, 0);
+  };
+  addEventListener("pointerup", endDrag);
+  // A touch that turns into a vertical scroll is cancelled: snap to the nearest card instead of
+  // leaving the ring half-turned with dragging still on.
+  addEventListener("pointercancel", endDrag);
   stage.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
   // auto-rotate: only with motion allowed, never after the user took over, paused on hover/focus
   const startAuto = () => {
@@ -484,6 +508,10 @@ function initScenes() {
   root.addEventListener("keydown", (e) => {
     if (e.key === "ArrowRight") { e.preventDefault(); set(active + 1, root.contains(document.activeElement) && (document.activeElement as HTMLElement).getAttribute("role") === "tab"); }
     if (e.key === "ArrowLeft") { e.preventDefault(); set(active - 1, root.contains(document.activeElement) && (document.activeElement as HTMLElement).getAttribute("role") === "tab"); }
+    // Tabs pattern: Home / End jump to the first / last tab.
+    if ((e.key === "Home" || e.key === "End") && (e.target as Element).getAttribute("role") === "tab") {
+      e.preventDefault(); set(e.key === "Home" ? 0 : panels.length - 1, true);
+    }
   });
   set(0);
   const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { io.disconnect(); seen = true; set(active); } }, { threshold: 0.35 });
@@ -538,6 +566,7 @@ initBitset();
 initHotspots();
 initShine();
 initStage();
+initStill();
 initCopy();
 initAudience();
 initDocsNav();

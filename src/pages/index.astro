@@ -39,7 +39,7 @@ const hotspots = [
   { x: 35, y: 64, tool: "ketch", label: "ketch · verified installs", accent: THEMES.ketch.accent, href: "/ketch/", text: "Installs from any repo that ships releases and checks the published SHA-256 sums against what landed on disk." },
 ];
 ---
-<Base title={homeTitle} description={homeDescription} theme="home" jsonLd={jsonLd}>
+<Base title={homeTitle} description={homeDescription} theme="home" imageAlt={homeTitle} jsonLd={jsonLd}>
   <!-- HERO -->
   <section class="hero container" aria-labelledby="hero-title" data-audience="oss">
     <div class="hero__copy">
@@ -114,14 +114,14 @@ const hotspots = [
       {tools.map((p) => (
         <li class="card glass shine card--lift oss-card" style={`--card-accent:${p.data.accent}`}>
           <span class="oss-card__mesh" aria-hidden="true"></span>
-          <Picture class="oss-card__preview" dir={p.id} name="hero" widths={[1200]} sizes="420px" w={2400} h={1600} />
+          <Picture class="oss-card__preview" dir={p.id} name="hero" widths={[800, 1200]} sizes="300px" w={2400} h={1600} />
           <div class="oss-card__top">
             <span class="icon" aria-hidden="true">{glyph[p.id] ?? p.data.title.slice(0, 1)}</span>
             <span class="badge badge--version" style={`--accent:${p.data.accent}`}>v{p.data.version}</span>
           </div>
           <h3 class="oss-card__title">{p.data.title}<span>.</span></h3>
           <p>{p.data.tagline}</p>
-          <pre class="code" aria-label={`Install ${p.data.title}`}><code><span class="tok-p" aria-hidden="true">$ </span>{cardInstall(p)}</code></pre>
+          <pre class="code" role="group" aria-label={`Install ${p.data.title}`}><code><span class="tok-p" aria-hidden="true">$ </span>{cardInstall(p)}</code></pre>
           <p class="price-chips"><span class="price-chip">Free · OSS</span><span class="price-chip price-chip--pro">Pro {proFor(p).price}*</span></p>
           <a class="oss-card__link" href={u(`/${p.id}/`)}>Explore {p.data.title} <Icon name="arrow" size={16} /></a>
         </li>
@@ -155,7 +155,7 @@ const hotspots = [
       <h2 id="why-title" class="h2">Small, local, accountable.</h2>
     </header>
     <ul class="grid grid--4" role="list">
-      <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="box" /></span><h3 class="h3">One binary each</h3><p>Written in Rust and shipped as a single native binary for macOS and Linux.</p></li>
+      <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="box" /></span><h3 class="h3">One binary each</h3><p>Written in Rust and shipped as a single native binary for macOS and Linux; ketch runs on Windows too.</p></li>
       <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="tree" /></span><h3 class="h3">Local first</h3><p>Ledgers, archives and installs live on your machine; export telemetry only if you choose.</p></li>
       <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="chart" /></span><h3 class="h3">Measured and verified</h3><p>rtok records every saving, cox records every request’s cost, ketch checks every checksum.</p></li>
       <li class="card glass shine"><span class="icon" aria-hidden="true"><Icon name="lock" /></span><h3 class="h3">Same licensing</h3><p>{LICENSE.short}, for every tool in the catalog.</p></li>
@@ -181,12 +181,12 @@ const hotspots = [
           <div class="price-tier price-tier--pro">
             <div class="tier__head"><strong>Pro <span class="badge badge--placeholder">Placeholder</span></strong><span class="price__num price__num--sm">{proFor(p).price}</span></div>
             <ul class="checklist">{proFor(p).features.map((f) => <li><Icon name="check" size={16} /> {f}</li>)}</ul>
-            <a class="btn btn--primary btn--block" href={u(`/${p.id}/#pricing`)} style={`--accent:${p.data.accent}`}>Join the Pro waitlist</a>
+            <button class="btn btn--primary btn--block" type="button" aria-disabled="true" aria-describedby="pricing-note" style={`--accent:${p.data.accent}`}>Join the Pro waitlist</button>
           </div>
         </article>
       ))}
     </div>
-    <p class="footnote">Placeholder links — checkout is not wired up in this MVP.</p>
+    <p class="footnote" id="pricing-note">Placeholder — the Pro waitlist is not open yet; checkout is not wired up in this MVP.</p>
   </section>
 
   <!-- FAQ -->

@@ -12,7 +12,7 @@ interface Props { tools: CollectionEntry<"projects">[]; hotspots: Hotspot[] }
 const { tools, hotspots } = Astro.props;
 const n = tools.length;
 ---
-<div class="ring" data-ring style={`--n:${n}`} aria-roledescription="carousel" aria-label="Products">
+<div class="ring" data-ring style={`--n:${n}`} role="region" aria-roledescription="carousel" aria-label="Products">
   <div class="ring__stage" data-ring-stage>
     <ul class="ring__track" data-ring-track data-hotspots>
       {tools.map((t, i) => {
