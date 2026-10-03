@@ -1,5 +1,5 @@
 {
-  "$comment": "Docs navigation per product. Files are paths relative to the product's docs/ folder as synced into content/docs/<product>/. A file listed nowhere (not in groups, not in exclude) still gets a page under the trailing 'More' group, and `npm run check:docs` warns about it. `exclude` maps a file (or a folder prefix ending in /) to the reason it has no page. `page` entries are site-authored pages (see src/pages/[slug]/docs/[doc].astro).",
+  "$comment": "Docs navigation per product. Files are paths relative to the product's docs/ folder as synced into content/docs/<product>/. A file listed nowhere (not in groups, not in exclude) still gets a page under the trailing 'More' group, and `npm run check:docs` warns about it. `exclude` maps a file (or a folder prefix ending in /) to the reason it has no page. `page` entries are site-authored pages (see src/pages/[slug]/docs/[doc].astro). Internal pages (plans, research, audits, design notes, maintainer runbooks, agent instructions) are left out by each product's sync-docs.yml; the `exclude` entries for them keep a stale sync from giving them a page.",
   "rtok": {
     "groups": [
       { "label": "Start", "items": [
@@ -14,15 +14,11 @@
         { "file": "otel.md", "title": "OpenTelemetry" }
       ] },
       { "label": "Extend", "items": [
-        { "file": "plugin-authoring.md", "title": "Writing a plugin" }
+        { "file": "plugin-authoring.md", "title": "Writing a plugin" },
+        { "file": "plugin-versions.md", "title": "Plugin versions" }
       ] },
       { "label": "Background", "items": [
-        { "file": "comparison.md", "title": "Comparison" },
-        { "file": "report.md", "title": "PDF renderer" }
-      ] },
-      { "label": "Contributing", "items": [
-        { "file": "windows.md", "title": "Windows" },
-        { "file": "colima.md", "title": "Colima" }
+        { "file": "comparison.md", "title": "Comparison" }
       ] }
     ],
     "exclude": {
@@ -30,7 +26,14 @@
       "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud",
       "plugin-plan-template.md": "Internal template for plugin proposals",
       "research/": "Internal research notes",
-      "assets/": "Notes about image assets, not documentation"
+      "assets/": "Notes about image assets, not documentation",
+      "agency.md": "Instructions for coding agents working on rtok",
+      "batch-flex.md": "Cost-lever research and planned proxy work, not current behaviour",
+      "llm-soft-compression.md": "Research and roadmap note",
+      "model-routing.md": "Planned feature note, not current behaviour",
+      "report.md": "Internal survey of PDF renderer candidates",
+      "windows.md": "Contributor notes for running the gate on Windows",
+      "colima.md": "Contributor and agent container setup"
     }
   },
   "cox": {
@@ -44,24 +47,22 @@
         { "file": "tools.md", "title": "Tools" },
         { "file": "ide.md", "title": "Editors" },
         { "file": "observability.md", "title": "Observability" },
-        { "file": "compat.md", "title": "Compatibility" }
+        { "file": "app-server.md", "title": "Remote sessions" },
+        { "file": "voice.md", "title": "Voice input" }
       ] },
-      { "label": "Design", "items": [
-        { "file": "design/loop.md", "title": "Turn loop" },
-        { "file": "design/protocol.md", "title": "Protocol" },
-        { "file": "design/sandbox.md", "title": "Sandbox" },
-        { "file": "design/routing.md", "title": "Tier routing" },
-        { "file": "design/providers.md", "title": "Provider registry" },
-        { "file": "design/provider.md", "title": "Provider cost fields" },
-        { "file": "design/extensions.md", "title": "Extensions" }
+      { "label": "Extend", "items": [
+        { "file": "plugins.md", "title": "Writing a plugin" },
+        { "file": "plugins/cursor.md", "title": "Cursor plugin" }
       ] }
     ],
     "exclude": {
-      "design/v0.2-": "Scope gates for a future v0.2, not current behaviour",
-      "design/improvement-plan-2026.md": "Roadmap proposal, not current behaviour",
+      "design/": "Internal design notes, scope gates and proposals",
       "brand/": "Visual design system of the cox website",
       "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud",
-      "assets/": "Notes about image assets, not documentation"
+      "assets/": "Notes about image assets, not documentation",
+      "compat.md": "Maintainer log of manual smoke checks",
+      "i18n.md": "Contributor notes on the translation catalogs",
+      "qa/": "Internal QA audits"
     }
   },
   "ketch": {
@@ -81,7 +82,9 @@
       ] }
     ],
     "exclude": {
-      "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud"
+      "sonarcloud-setup.md": "Maintainer CI setup for SonarCloud",
+      "research": "Internal research notes",
+      "qa/": "Internal QA audits"
     }
   }
 }
