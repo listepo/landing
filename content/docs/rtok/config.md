@@ -106,6 +106,15 @@ enabled    = true                     # false = hooks skip agent register/touch/
 idle       = "30m"                    # `live()`'s window: no `ended_at` and `last_seen` within this of now
 push_bytes = 1024                     # framed messages pushed per UserPromptSubmit/PostToolUse; the rest → "and N more" (T288)
 
+[agents.usage]                        # rtok agents usage (T358)
+source = "logs"                       # logs = the agents' own session files (Claude Code, Codex); rtok = what passed through rtok; both
+hosts  = []                           # [] = every host; else host ids, e.g. ["claude", "codex"]
+since  = ""                           # "" = all time; a date (2026-09-01, whole days in tz) or a duration (30d)
+until  = ""                           # "" = through today; a date, inclusive
+period = "monthly"                    # monthly | daily: the bottom table
+by     = "agent"                      # agent | model: what the middle table groups by
+tz     = ""                           # IANA zone for day and month boundaries; "" = the system zone
+
 [mcp]                                 # rtok mcp
 tools                   = []          # [] = all tools from enabled plugins; else an allow-list; `expand` always stays listed (D4)
 max_description_tokens  = 60          # enforced by a test (T4.1)
@@ -335,35 +344,6 @@ skills     = true                     # archive skill bodies outside keep_turns 
 [plugins.proxy]
 enabled = true                        # the proxy plugin (usage capture); the server itself is [proxy]
 
-#### `[plugins.proxy.semantic_cache]` — opt-in response cache (P31)
-
-Off by default until Gate P31 (zero false hits on the P9 set). When enabled (T31.2), the proxy may
-serve a prior response when a normalized prompt is similar enough; a false hit is a wrong answer, so
-this stays opt-in. Env: `RTOK_PLUGINS_PROXY_SEMANTIC_CACHE_ENABLED=true`.
-
-| Key | Default | Meaning |
-|-----|---------|---------|
-| `enabled` | `false` | Master switch; proxy bytes stay identical when off |
-| `threshold` | `0.99` | Cosine similarity floor for the semantic tier |
-| `ttl_s` | `300` | Entry TTL in seconds |
-| `max_messages` | `1` | Skip cache when `messages` length exceeds this |
-| `require_empty_tools` | `true` | Do not cache turns with non-empty `tools[]` |
-| `embed_backend` | `"hash"` | `"hash"` = direct tier only until P29 embeddings |
-| `cache_by_model` | `true` | Partition cache entries by model |
-| `cache_by_provider` | `true` | Partition cache entries by provider |
-
-```toml
-[plugins.proxy.semantic_cache]
-enabled = false
-threshold = 0.99
-ttl_s = 300
-max_messages = 1
-require_empty_tools = true
-embed_backend = "hash"
-cache_by_model = true
-cache_by_provider = true
-```
-
 [plugins.inject]
 enabled       = true
 budget_tokens = 800                   # per turn, all injections together (decision D5)
@@ -416,6 +396,35 @@ enabled = true                        # extractive summaries of archived tool ou
 [plugins.wasm]
 enabled = false                      # off by default; no .wasm loaded until T32.2 host + `wasm-host` feature
 dir     = "~/.rtok/plugins"          # scan one level for *.wasm; D6 — this repo never vendors third-party plugins
+```
+
+### `[plugins.proxy.semantic_cache]` — opt-in response cache (P31)
+
+Off by default until Gate P31 (zero false hits on the P9 set). When enabled (T31.2), the proxy may
+serve a prior response when a normalized prompt is similar enough; a false hit is a wrong answer, so
+this stays opt-in. Env: `RTOK_PLUGINS_PROXY_SEMANTIC_CACHE_ENABLED=true`.
+
+| Key | Default | Meaning |
+|-----|---------|---------|
+| `enabled` | `false` | Master switch; proxy bytes stay identical when off |
+| `threshold` | `0.99` | Cosine similarity floor for the semantic tier |
+| `ttl_s` | `300` | Entry TTL in seconds |
+| `max_messages` | `1` | Skip cache when `messages` length exceeds this |
+| `require_empty_tools` | `true` | Do not cache turns with non-empty `tools[]` |
+| `embed_backend` | `"hash"` | `"hash"` = direct tier only until P29 embeddings |
+| `cache_by_model` | `true` | Partition cache entries by model |
+| `cache_by_provider` | `true` | Partition cache entries by provider |
+
+```toml
+[plugins.proxy.semantic_cache]
+enabled = false
+threshold = 0.99
+ttl_s = 300
+max_messages = 1
+require_empty_tools = true
+embed_backend = "hash"
+cache_by_model = true
+cache_by_provider = true
 ```
 
 
@@ -557,6 +566,7 @@ Unset keeps Mozilla roots only. `rtok hook` never opens TLS.
 | `agents remove` | `--dry-run` | `setup.dry_run` (the command itself is the `--remove` action) |
 | `agents list` | — | reads the host configs and `<bin> --version` (`--json` is the reading row) |
 | `agents whoami` | — | reads `RTOK_AGENT_ID` and resolves it through the store (T283); no key, no `setup.*` (`--json` is the reading row) |
+| `agents usage` | `--source`, `--host`, `--since`, `--until`, `--daily` / `--monthly`, `--tz` | `agents.usage.source`, `.hosts`, `.since`, `.until`, `.period`, `.tz` (`--unpriced` picks the view of one call, `--json` is the reading row) |
 | `agents sessions` | `--all` | (action: also lists ended sessions; live vs idle follows `agents.idle`) |
 | `agents show` | — | resolves an id prefix through the store (T284); live vs idle follows `agents.idle` (`--json` is the reading row) |
 | `agents status` | — | writes the calling agent's (`RTOK_AGENT_ID`) status text, ≤ 120 chars (T284); no key |
